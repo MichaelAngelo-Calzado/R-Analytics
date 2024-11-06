@@ -55,3 +55,22 @@ length(tv_list)
 head(tv_list_sub,50) 
 ##tv_list2 <- read_html(url) %>% html_nodes('<h3.ipc-title__text') %>% html_text  tv_list2 <- as.data.frame(tv_list2[27:50]) tv_list2
 ```
+
+```{r}
+tv_list_sub <- as.data.frame(tv_list[2:26])
+
+head(tv_list_sub)
+```
+
+```{r}
+tail(tv_list_sub)
+```
+
+```{r}
+colnames(tv_list_sub) <- "ranks"
+
+split_df <- strsplit(as.character(tv_list_sub$ranks), ".",fixed = TRUE)
+split_df <- data.frame(do.call(rbind,split_df))
+split_df
+```
+
