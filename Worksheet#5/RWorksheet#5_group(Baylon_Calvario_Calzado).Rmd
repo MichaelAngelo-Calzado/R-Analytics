@@ -2,10 +2,56 @@
 title: "RWorksheet#5_group.Rmd"
 author: "Baylon_Calvario_Calzado"
 date: "2024-11-01"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(polite)
+library(kableExtra)
+library(rmarkdown)
+library(httr)
+library(rvest)
+
+url <- 'https://www.imdb.com/chart/toptv/'
+page <- read_html(url)
+        tv_list2 <- page %>% 
+        html_nodes('.ipc-title__text') %>% 
+        html_text() 
+        length(tv_list2) 
+        
+        session <- bow(url, user_agent = "Educational") 
+        session 
+        tv_list <- character(0) 
+        links <- character(0)
+
+```
+
+
+```{r}
+library(polite)
+library(kableExtra)
+library(rmarkdown)
+
+url <- 'https://www.amazon.com/'
+
+session <- bow(url,
+              user_agent = "Educational")
+session
+```
+
+```{r} 
+tv_list <- read_html(url) %>% 
+  html_nodes('.ipc-title__text') %>% 
+  html_text 
+tv_list_sub <- as.data.frame(tv_list[2:26]) 
+length(tv_list) 
+head(tv_list_sub,50) 
+##tv_list2 <- read_html(url) %>% html_nodes('<h3.ipc-title__text') %>% html_text  tv_list2 <- as.data.frame(tv_list2[27:50]) tv_list2
+```
