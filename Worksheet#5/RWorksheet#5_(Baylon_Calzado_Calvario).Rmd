@@ -1,0 +1,88 @@
+---
+title: "RWorksheet#5_group.Rmd"
+author: "Baylon_Calvario_Calzado"
+date: "2024-11-01"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(rvest)
+library(dplyr)
+library(stringr)
+library(polite)
+library(kableExtra)
+library(knitr)
+
+link = "https://www.imdb.com/chart/toptv/"
+page = read_html(link)
+session <- bow(link, user_agent = "Educational") 
+        session
+```
+
+```{r}
+nam <- page %>% html_nodes(".ipc-title__text") %>% html_text()
+name <- nam[!grepl("Top 250 TV Shows|IMDb Charts|Recently viewed|More to explore", nam, ignore.case = TRUE)]
+name
+```
+```{r}
+rank <- str_extract(name, "^\\d+\\.")
+rank
+```
+
+
+```{r}
+title <- str_replace(name, "^\\d+\\.", "")
+title
+```
+
+
+```{r}
+yea = page %>% html_nodes(".sc-5bc66c50-6.OOdsw.cli-title-metadata-item") %>% html_text()
+year <- str_extract_all(yea, "\\b\\d{4}(?:–\\d{4})?\\b") %>% unlist()
+year
+```
+
+
+```{r}
+rating = page %>% html_nodes(".ipc-rating-star--rating") %>% html_text()
+rating
+```
+
+
+```{r}
+episode <- page %>% html_nodes(".sc-5bc66c50-6.OOdsw.cli-title-metadata-item") %>%
+html_text()
+episodes <- str_extract_all(episode, "\\b\\d+ eps\\b") %>% unlist()
+episodes
+```
+
+```{r}
+vote = page %>% html_nodes(".ipc-rating-star--voteCount") %>% html_text()
+vote
+```
+```{r}
+max_length <- max(length(rank), length(title), length(year), length(rating), length(episodes), length(vote))
+rank <- c(rank, rep(NA, max_length - length(rank)))
+title <- c(title, rep(NA, max_length - length(title)))
+year <- c(year, rep(NA, max_length - length(year)))
+rating <- c(rating, rep(NA, max_length - length(rating)))
+episodes <- c(episodes, rep(NA, max_length - length(episodes)))
+vote <- c(vote, rep(NA, max_length - length(vote)))
+max_length
+```
+```{r}
+movies = data.frame(rank, title, year, rating, episodes, vote, stringsAsFactors = FALSE)
+write.csv(movies, "movies.csv")
+print(head(movies))
+movies %>%
+  kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+
