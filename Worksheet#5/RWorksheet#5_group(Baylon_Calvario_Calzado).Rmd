@@ -18,59 +18,95 @@ library(kableExtra)
 library(rmarkdown)
 library(httr)
 library(rvest)
+library(dplyr)
+library(stringr)
+```
 
-url <- 'https://www.imdb.com/chart/toptv/'
-page <- read_html(url)
-        tv_list2 <- page %>% 
-        html_nodes('.ipc-title__text') %>% 
-        html_text() 
-        length(tv_list2) 
-        
-        session <- bow(url, user_agent = "Educational") 
-        session 
-        tv_list <- character(0) 
-        links <- character(0)
+```{r}
+urls <- c('https://www.amazon.com/s?k=skin+care&crid=3FODLJK4URUE9&sprefix=skin%2Caps%2C510&ref=nb_sb_ss_ts-doa-p_1_4', 'https://www.amazon.com/s?k=perfume&crid=1MRC8YEDNO62V&sprefix=perfume%2Caps%2C397&ref=nb_sb_noss_1', 'https://www.amazon.com/s?k=bags+for+women&ref=nb_sb_noss', 'https://www.amazon.com/s?k=shoes&crid=QOEP1YQOC5W&sprefix=shoe%2Caps%2C1302&ref=nb_sb_noss_2', 'https://www.amazon.com/s?k=pants&ref=nb_sb_noss')
 
+nameofproduct <- vector("list", length(urls))
+price <- vector("list", length(urls))
+description <- vector("list", length(urls))
+Ratings <- vector("list", length(urls))
+Reviews <- vector("list", length(urls))
 ```
 
 
 ```{r}
-library(polite)
-library(kableExtra)
-library(rmarkdown)
+df <- list()
 
-url <- 'https://www.amazon.com/'
+for (i in seq_along(urls)) {
+    session <- bow(urls[i], user_agent = "Educational")
+    webpage <- scrape(session)
 
-session <- bow(url,
-              user_agent = "Educational")
-session
+nameofproduct[[i]] <-  webpage %>%
+  html_nodes('.a-size-base-plus.a-color-base') %>%
+  html_text() %>%
+  head(30)
+
+price[[i]] <-  webpage %>%
+  html_nodes('.a-price-whole') %>%
+  html_text() %>%
+  head(30)
+
+description[[i]] <-  webpage %>%
+  html_nodes('.a-size-mini.a-spacing-none.a-color-base s-line-clamp-3') %>%
+  html_text() %>%
+  head(30)
+
+Ratings[[i]] <-  webpage %>%
+  html_nodes('.a-icon.a-icon-star-small.a-star-small-4-5') %>%
+  html_text() %>%
+  head(30)
+
+Reviews[[i]] <-  webpage %>%
+  html_nodes('.a-size-base-plus.a-color-base') %>%
+  html_text() %>%
+  head(30)
+}
 ```
 
-```{r} 
-tv_list <- read_html(url) %>% 
-  html_nodes('.ipc-title__text') %>% 
-  html_text 
-tv_list_sub <- as.data.frame(tv_list[2:26]) 
-length(tv_list) 
-head(tv_list_sub,50) 
-##tv_list2 <- read_html(url) %>% html_nodes('<h3.ipc-title__text') %>% html_text  tv_list2 <- as.data.frame(tv_list2[27:50]) tv_list2
-```
 
 ```{r}
-tv_list_sub <- as.data.frame(tv_list[2:26])
 
-head(tv_list_sub)
+skincare <- data.frame(nameofproduct[[1]],
+                       Price = price[[1]],
+                       Ratings = Ratings[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(skincare)
 ```
-
 ```{r}
-tail(tv_list_sub)
+perfume <- data.frame(nameofproduct[[2]],
+                       Price = price[[2]],
+                       Ratings = Ratings[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(perfume)
 ```
-
 ```{r}
-colnames(tv_list_sub) <- "ranks"
-
-split_df <- strsplit(as.character(tv_list_sub$ranks), ".",fixed = TRUE)
-split_df <- data.frame(do.call(rbind,split_df))
-split_df
+bags <- data.frame(nameofproduct[[3]],
+                       Price = price[[3]],
+                       Ratings = Ratings[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(bags)
+```
+```{r}
+shoes <- data.frame(nameofproduct[[4]],
+                       Price = price[[4]],
+                       Ratings = Ratings[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(shoes)
+```
+```{r}
+pants <- data.frame(nameofproduct[[5]],
+                       Price = price[[5]],
+                       Ratings = Ratings[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants)
 ```
 
