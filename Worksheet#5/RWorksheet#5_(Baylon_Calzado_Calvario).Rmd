@@ -1,0 +1,202 @@
+---
+title: "RWorksheet#5_group.Rmd"
+author: "Baylon_Calvario_Calzado"
+date: "2024-11-01"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(rvest)
+library(dplyr)
+library(stringr)
+library(polite)
+library(kableExtra)
+library(knitr)
+library(tidyverse)
+
+link = "https://www.imdb.com/chart/toptv/"
+page = read_html(link)
+session <- bow(link, user_agent = "Educational") 
+        session
+```
+
+```{r}
+nam <- page %>% html_nodes(".ipc-title__text") %>% html_text()
+name <- nam[!grepl("Top 250 TV Shows|IMDb Charts|Recently viewed|More to explore", nam, ignore.case = TRUE)]
+name
+```
+```{r}
+rank <- str_extract(name, "^\\d+\\.")
+rank
+```
+
+
+```{r}
+title <- str_replace(name, "^\\d+\\.", "")
+title
+```
+
+
+```{r}
+yea = page %>% html_nodes(".sc-5bc66c50-6.OOdsw.cli-title-metadata-item") %>% html_text()
+year <- str_extract_all(yea, "\\b\\d{4}(?:–\\d{4})?\\b") %>% unlist()
+year
+```
+
+
+```{r}
+rating = page %>% html_nodes(".ipc-rating-star--rating") %>% html_text()
+rating
+```
+
+
+```{r}
+episode <- page %>% html_nodes(".sc-5bc66c50-6.OOdsw.cli-title-metadata-item") %>%
+html_text()
+episodes <- str_extract_all(episode, "\\b\\d+ eps\\b") %>% unlist()
+episodes
+```
+
+```{r}
+vote = page %>% html_nodes(".ipc-rating-star--voteCount") %>% html_text()
+vote
+```
+```{r}
+urls <- c("https://www.imdb.com/title/tt0903747/?ref_=chttvtp_i_1", 
+          "https://www.imdb.com/title/tt5491994/?ref_=chttvtp_i_2",
+          "https://www.imdb.com/title/tt0795176/?ref_=chttvtp_i_3",
+          "https://www.imdb.com/title/tt0185906/?ref_=chttvtp_i_4",
+          "https://www.imdb.com/title/tt7366338/?ref_=chttvtp_i_5",
+          "https://www.imdb.com/title/tt0306414/?ref_=chttvtp_i_6",
+          "https://www.imdb.com/title/tt0417299/?ref_=chttvtp_i_7",
+          "https://www.imdb.com/title/tt6769208/?ref_=chttvtp_i_8",
+          "https://www.imdb.com/title/tt0141842/?ref_=chttvtp_i_9",
+          "https://www.imdb.com/title/tt2395695/?ref_=chttvtp_i_10",
+          "https://www.imdb.com/title/tt0081846/?ref_=chttvtp_i_11",
+          "https://www.imdb.com/title/tt9253866/?ref_=chttvtp_i_12",
+          "https://www.imdb.com/title/tt0944947/?ref_=chttvtp_i_13",
+          "https://www.imdb.com/title/tt7678620/?ref_=chttvtp_i_14",
+          "https://www.imdb.com/title/tt0071075/?ref_=chttvtp_i_15",
+          "https://www.imdb.com/title/tt1355642/?ref_=chttvtp_i_16",
+          "https://www.imdb.com/title/tt2861424/?ref_=chttvtp_i_17",
+          "https://www.imdb.com/title/tt1533395/?ref_=chttvtp_i_18",
+          "https://www.imdb.com/title/tt8420184/?ref_=chttvtp_i_19",
+          "https://www.imdb.com/title/tt0052520/?ref_=chttvtp_i_20",
+          "https://www.imdb.com/title/tt1877514/?ref_=chttvtp_i_21",
+          "https://www.imdb.com/title/tt1475582/?ref_=chttvtp_i_22",
+          "https://www.imdb.com/title/tt2560140/?ref_=chttvtp_i_23",
+          "https://www.imdb.com/title/tt0103359/?ref_=chttvtp_i_24",
+          "https://www.imdb.com/title/tt0386676/?ref_=chttvtp_i_25")
+
+user_reviews <- vector("numeric", length(urls))
+critic_reviews <- vector("numeric", length(urls))
+for (i in seq_along(urls)) {
+
+  session <- bow(urls[i], user_agent = "Educational")
+
+  webpage <- scrape(session)
+
+  reviewz <- webpage %>% html_nodes(".score") %>% html_text()
+
+  if (length(reviewz) >= 2) {
+
+    user_reviews[i] <- ifelse(grepl("K", reviewz[1]), 
+                              as.numeric(gsub("K", "", reviewz[1])) * 1000, 
+                              as.numeric(reviewz[1]))
+    critic_reviews[i] <- as.numeric(reviewz[2])
+  } else {
+    user_reviews[i] <- NA
+    critic_reviews[i] <- NA
+  }
+}
+```
+
+
+```{r}
+user_reviews
+critic_reviews
+```
+
+```{r}
+max_length <- max(length(rank), length(title), length(year), length(rating), length(episodes), length(vote))
+rank <- c(rank, rep(NA, max_length - length(rank)))
+title <- c(title, rep(NA, max_length - length(title)))
+year <- c(year, rep(NA, max_length - length(year)))
+rating <- c(rating, rep(NA, max_length - length(rating)))
+episodes <- c(episodes, rep(NA, max_length - length(episodes)))
+vote <- c(vote, rep(NA, max_length - length(vote)))
+user_reviews <- c(user_reviews, rep(NA, max_length - length(user_reviews)))
+critic_reviews <- c(critic_reviews, rep(NA, max_length - length(critic_reviews)))
+max_length
+```
+```{r}
+movies = data.frame(rank, title, year, rating, episodes, vote, user_reviews, critic_reviews, stringsAsFactors = FALSE)
+write.csv(movies, "movies.csv")
+print(head(movies))
+movies %>%
+  kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+link2 = "https://www.imdb.com/title/tt0903747/reviews/?ref_=tt_ov_ql_2"
+page2 = read_html(link)
+session2 <- bow(link, user_agent = "Educational") 
+        session2
+```
+```{r}
+reviews <- page2 %>% html_nodes(".ipc-link--base") %>%  
+  html_text()
+reviews
+
+```
+```{r}
+date <- page2 %>% html_nodes(".ipc-inline-list__item.review-date") %>%  
+  html_text()
+date 
+
+```
+```{r}
+user_rating <- page2 %>% html_nodes(".sc-a2ac93e5-4.gyibOi") %>%  
+  html_text()
+user_rating
+```
+
+
+```{r}
+link1 = "https://www.imdb.com/chart/toptv/"
+page1 = read_html(link)
+session1 <- bow(link1, user_agent = "Educational") 
+        session1
+```
+
+```{r}
+user_review = page %>% html_nodes(".score") %>% html_text()
+user_review
+```
+```{r}
+library(ggplot2)
+
+movies$year <- as.numeric(movies$year)
+year_counts <- movies %>%
+  filter(!is.na(year)) %>%
+  count(year)
+
+ggplot(year_counts, aes(x = year, y = n)) +
+  geom_line(color = "blue") +
+  geom_point(color = "red") +
+  labs(title = "Number of TV Shows Released by Year",
+       x = "Year",
+       y = "Number of TV Shows") +
+  theme_minimal()
+
+most_releases <- year_counts[which.max(year_counts$n), ]
+print(most_releases)
+```
+
+
