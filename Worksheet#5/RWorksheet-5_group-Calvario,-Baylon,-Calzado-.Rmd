@@ -129,8 +129,7 @@ pants %>%
 ```
 6. Describe the data you have extracted.
 
-The extracted dataset contains key details about products across five categories: Skincare, Perfume, Bags, Shoes, and Pants. 
-Here's an overview:
+The extracted dataset contains key details about products across five categories: Skincare, Perfume, Bags, Shoes, and Pants. Here's an overview:
 
 Product Name: The titles of the 30 products per category, retrieved from the website.
 
@@ -217,7 +216,7 @@ Explanation:
 
 -The plot highlights clusters or trends, such as whether higher prices correlate with higher ratings.
 
--Outliers or inconsistencies in pricing or ratings are easily spotted.
+Outliers or inconsistencies in pricing or ratings are easily spotted.
 
 10. Rank the products of each category by price and ratings. Explain briefly.
 ```{r}
