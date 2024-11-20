@@ -236,4 +236,4 @@ pants_ranked %>%
 # High Price + High Rating: Products ranked at the top of each list with high prices and ratings are generally regarded as premium and popular choices within the category.
 # Lower Price + High Rating: Products with lower prices but high ratings indicate affordable yet well-received options, highlighting value for money.
 
-#ffdgbfhanafghrjfbrfsjvbmsnfhdjsdg
+# ambot nimo bea
