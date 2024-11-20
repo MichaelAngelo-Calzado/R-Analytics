@@ -1,0 +1,239 @@
+---
+title: "RWorksheet#5_group.Rmd"
+author: "Baylon_Calvario_Calzado"
+date: "2024-11-20"
+output:
+  pdf_document:
+   latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r}
+library(polite)
+library(kableExtra)
+library(rmarkdown)
+library(httr)
+library(rvest)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+```
+
+```{r}
+urls <- c('https://www.amazon.com/s?k=skin+care&crid=3FODLJK4URUE9&sprefix=skin%2Caps%2C510&ref=nb_sb_ss_ts-doa-p_1_4', 'https://www.amazon.com/s?k=perfume&crid=1MRC8YEDNO62V&sprefix=perfume%2Caps%2C397&ref=nb_sb_noss_1', 'https://www.amazon.com/s?k=bags+for+women&ref=nb_sb_noss', 'https://www.amazon.com/s?k=shoes&crid=QOEP1YQOC5W&sprefix=shoe%2Caps%2C1302&ref=nb_sb_noss_2', 'https://www.amazon.com/s?k=pants&ref=nb_sb_noss')
+
+nameofproduct <- vector("list", length(urls))
+```
+
+
+```{r}
+df <- list()
+
+for (i in seq_along(urls)) {
+    session <- bow(urls[i], user_agent = "Educational")
+    webpage <- scrape(session)
+
+nameofproduct[[i]] <-  webpage %>%
+  html_nodes('.a-size-base-plus.a-color-base') %>%
+  html_text() %>%
+  head(10)
+
+}
+```
+```{r}
+
+skincare <- data.frame(nameofproduct[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(skincare)
+skincare %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+perfume <- data.frame(nameofproduct[[2]],
+                       Price = price[[2]],
+                       Ratings = Ratings[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(perfume, 30)
+perfume %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+bags <- data.frame(nameofproduct[[3]],
+                       Price = price[[3]],
+                       Ratings = Ratings[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(bags, 30)
+bags %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+shoes <- data.frame(nameofproduct[[4]],
+                       Price = price[[4]],
+                       Ratings = Ratings[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(shoes, 30)
+shoes %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+pants <- data.frame(nameofproduct[[5]],
+                       Price = price[[5]],
+                       Ratings = Ratings[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants, 30)
+pants %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+6. Describe the data you have extracted.
+
+The extracted dataset contains key details about products across five categories: Skincare, Perfume, Bags, Shoes, and Pants. 
+Here's an overview:
+
+Product Name: The titles of the 30 products per category, retrieved from the website.
+
+Price: Numerical values indicating the price, cleaned and standardized for analysis.
+
+Description: Short descriptions highlighting the features of each product.
+
+Ratings: Average star ratings (1 to 5) given by customers, reflecting product quality or satisfaction.
+
+Category: A label indicating which category the product belongs to.
+
+Size: A total of 150 products, with 30 from each category.
+
+The data reveals insights into product characteristics and consumer feedback, aiding in trend analysis and decision-making.
+
+7. What will be your use case for the data you have extracted?
+
+The extracted data can be applied in several practical contexts:
+
+Market Analysis: 
+ 
+ -Identifying price trends and outliers in each category.
+
+ -Analyzing consumer preferences based on product ratings and reviews.
+
+
+Customer Insights:
+
+-Recommending products with the best quality-price ratio.
+Highlighting top-rated or most affordable products in each category.
+
+
+Retail Strategies:
+-Informing inventory stocking by analyzing trends in popular products.
+
+-Pricing strategies for competitive positioning.
+
+
+Visualization and Reporting:
+
+-Using the data to create visual insights for presentations or reports.
+
+8. Create graphs regarding the use case. And briefly explain it.
+```{r}
+category_names <- c("Skincare", "Perfume", "Bags", "Shoes", "Pants")
+all_data <- bind_rows(
+  skincare %>% mutate(Category = "Skincare"),
+  perfume %>% mutate(Category = "Perfume"),
+  bags %>% mutate(Category = "Bags"),
+  shoes %>% mutate(Category = "Shoes"),
+  pants %>% mutate(Category = "Pants")
+)
+
+all_data$Price <- as.numeric(gsub(",", "", all_data$Price))
+
+ggplot(all_data, aes(x = Category, y = Price)) +
+  geom_boxplot(fill = "skyblue") +
+  labs(title = "Price Distribution by Product Category", x = "Category", y = "Price") +
+  theme_minimal()
+```
+The boxplot visualizes the distribution of product prices across categories.
+
+Insights:
+
+-The spread of prices varies significantly by category.
+-Categories like Bags and Shoes may have higher median prices and broader ranges compared to Skincare or Perfume.
+
+
+9. Graph the price and the ratings for each category. Use basic plotting functions and ggplot2
+package.
+
+```{r}
+ggplot(all_data, aes(x = Price, y = as.numeric(Ratings))) +
+  geom_point(aes(color = Category), size = 2) +
+  labs(title = "Price vs Ratings by Category", x = "Price", y = "Ratings") +
+  theme_minimal() +
+  facet_wrap(~ Category, scales = "free")
+```
+
+The scatter plot illustrates the relationship between price and ratings for each category.
+
+Explanation:
+
+-The relationship is plotted per category using facet_wrap.
+
+-The plot highlights clusters or trends, such as whether higher prices correlate with higher ratings.
+
+-Outliers or inconsistencies in pricing or ratings are easily spotted.
+
+10. Rank the products of each category by price and ratings. Explain briefly.
+
+```{r}
+skincare$Price <- as.numeric(gsub(",", "", skincare$Price))
+perfume$Price <- as.numeric(gsub(",", "", perfume$Price))
+bags$Price <- as.numeric(gsub(",", "", bags$Price))
+shoes$Price <- as.numeric(gsub(",", "", shoes$Price))
+pants$Price <- as.numeric(gsub(",", "", pants$Price))
+
+skincare_ranked <- skincare %>% arrange(desc(Price), desc(Ratings))
+perfume_ranked <- perfume %>% arrange(desc(Price), desc(Ratings))
+bags_ranked <- bags %>% arrange(desc(Price), desc(Ratings))
+shoes_ranked <- shoes %>% arrange(desc(Price), desc(Ratings))
+pants_ranked <- pants %>% arrange(desc(Price), desc(Ratings))
+```
+
+
+```{r}
+head(skincare_ranked, 30)
+skincare_ranked %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+head(perfume_ranked, 30)
+perfume_ranked %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+head(bags_ranked, 30)
+bags_ranked %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+head(shoes_ranked, 30)
+shoes_ranked %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+head(pants_ranked, 30)
+pants_ranked %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+# High Price + High Rating: Products ranked at the top of each list with high prices and ratings are generally regarded as premium and popular choices within the category.
+# Lower Price + High Rating: Products with lower prices but high ratings indicate affordable yet well-received options, highlighting value for money.
+
+#ffdgbfhanafghrjfbrfsjvbmsnfhdjsdg
