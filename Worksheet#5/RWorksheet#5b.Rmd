@@ -1,0 +1,173 @@
+---
+title: "RWorksheet#5_group.Rmd"
+author: "Baylon_Calvario_Calzado"
+date: "2024-11-01"
+output:
+  pdf_document:
+   latex_engine: xelatex
+  
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(rvest)
+library(dplyr)
+library(stringr)
+library(polite)
+library(kableExtra)
+library(knitr)
+library(tidyverse)
+library(RSelenium)
+
+```
+```{r}
+urls <- c('https://www.amazon.com/s?k=skin+care&crid=3FODLJK4URUE9&sprefix=skin%2Caps%2C510&ref=nb_sb_ss_ts-doa-p_1_4', 'https://www.amazon.com/s?k=perfume&crid=1MRC8YEDNO62V&sprefix=perfume%2Caps%2C397&ref=nb_sb_noss_1', 'https://www.amazon.com/s?k=bags+for+women&ref=nb_sb_noss', 'https://www.amazon.com/s?k=shoes&crid=QOEP1YQOC5W&sprefix=shoe%2Caps%2C1302&ref=nb_sb_noss_2', 'https://www.amazon.com/s?k=pants&ref=nb_sb_noss')
+
+nameofproduct <- vector("list", length(urls))
+```
+
+
+```{r}
+df <- list()
+
+for (i in seq_along(urls)) {
+    session <- bow(urls[i], user_agent = "Educational")
+    webpage <- scrape(session)
+
+nameofproduct[[i]] <-  webpage %>%
+  html_nodes('.a-size-base-plus.a-color-base') %>%
+  html_text() %>%
+  head(30)
+}
+```
+5. Extract the price, description, ratings and reviews of each product.
+
+```{r}
+
+skincare <- data.frame(nameofproduct[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(skincare, 10)
+```
+
+```{r}
+perfume <- data.frame(nameofproduct[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(perfume, 10)
+```
+```{r}
+bags <- data.frame(nameofproduct[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(bags, 10)
+```
+```{r}
+shoes <- data.frame(nameofproduct[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(shoes, 10)
+```
+```{r}
+pants <- data.frame(nameofproduct[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants, 10)
+```
+5 products, 10 products 20 reviews
+
+
+```{r}
+##skin care
+urls <- c('https://www.amazon.com/l-f-Hydrated-Skincare-Hydration-Cleanser/product-reviews/B08T7DSZYD/ref=cm_cr_arp_d_viewpnt_lft?ie=UTF8&reviewerType=all_reviews&captcha_verified=1&claim_type=EmailAddress&new_account=1&filterByStar=positive&pageNumber=1','https://www.amazon.com/l-f-Hydrated-Skincare-Hydration-Cleanser/product-reviews/B08T7DSZYD/ref=cm_cr_arp_d_viewpnt_lft?ie=UTF8&reviewerType=all_reviews&captcha_verified=1&claim_type=EmailAddress&new_account=1&filterByStar=positive&pageNumber=2')
+
+
+```
+
+
+```{r}
+userreviews <- vector("list", length(urls))
+Ratings <- vector("list", length(urls))
+Dateofreviews <- vector("list", length(urls))
+Titleofreviews <- vector("list", length(urls))
+Textreviews <- vector("list", length(urls))
+
+```
+
+```{r}
+df <- list()
+
+for (i in seq_along(urls)) {
+    session <- bow(urls[i], user_agent = "Educational")
+    webpage <- scrape(session)
+
+userreviews[[i]] <-  webpage %>%
+  html_nodes('span.a-profile-content.a-profile-name') %>%
+  html_text() %>%
+  head(20)
+
+Ratings[[i]] <-  webpage %>%
+  html_nodes('.a-icon.a-icon-star.a-star-5.review-rating') %>%
+  html_text() %>%
+  head(20)
+
+Dateofreviews[[i]] <-  webpage %>%
+  html_nodes('.a-size-base.a-color-secondary.review-date') %>%
+  html_text() %>%
+  head(20)
+
+Titleofreviews[[i]] <-  webpage %>%
+  html_nodes('.a-size-base.a-link-normal.review-title.a-color-base review-title-content.a-text-bold') %>%
+  html_text() %>%
+  head(20)
+Textreviews[[i]] <-  webpage %>%
+  html_nodes('.a-row.a-spacing-small.review-data') %>%
+  html_text() %>%
+  head(20)
+}
+```
+```{r}
+userreviews
+```
+
+```{r}
+
+skincare <- data.frame(userreviews[[1]],
+                       Ratings[[1]],
+                       Dateofreviews[[1]],
+                       Titleofreviews[[1]],
+                       Textreviews[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(skincare, 10)
+```
+```{r}
+link = "https://www.amazon.com/Fitbit-Exercise-Equipment-Membership-Porcelain/dp/B0CC63GZ3R?pd_rd_w=xIVJa&content-id=amzn1.sym.f6438a03-0f49-4586-9274-0abf25a38ea1&pf_rd_p=f6438a03-0f49-4586-9274-0abf25a38ea1&pf_rd_r=ETZRC7M3VHPR1C2BE3GG&pd_rd_wg=oEE9m&pd_rd_r=7c4d2acc-d23a-4240-96cf-27f39e954f55&pd_rd_i=B0CC63GZ3R&th=1"
+page = read_html(link)
+session <- bow(link, user_agent = "Educational") 
+        session
+```
+```{r}
+link1 = "https://www.amazon.com/Fitbit-Exercise-Equipment-Membership-Porcelain/product-reviews/B0CC63GZ3R/ref=cm_cr_arp_d_paging_btm_next_2?ie=UTF8&reviewerType=all_reviews&pageNumber=2"
+page1 = read_html(link1)
+session1 <- bow(link1, user_agent = "Educational") 
+        session1
+```
+
+```{r}
+nam <- page %>% html_nodes("span.a-profile-name") %>% html_text()
+name <- nam[!grepl("Product Overview Video|Amazon Customer|Recently viewed|More to explore", nam, ignore.case = TRUE)]
+name <- name[name != ""]
+name
+```
+```{r}
+nam1 <- page1 %>% html_nodes("span.a-profile-name") %>% html_text()
+name1 <- nam1[!grepl("Product Overview Video|Amazon Customer|Recently viewed|More to explore", nam1, ignore.case = TRUE)]
+name1 <- name1[name1 != ""]
+name1
+```
+#initial
