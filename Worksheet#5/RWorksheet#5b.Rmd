@@ -170,4 +170,4 @@ name1 <- nam1[!grepl("Product Overview Video|Amazon Customer|Recently viewed|Mor
 name1 <- name1[name1 != ""]
 name1
 ```
-#initial
+#again
