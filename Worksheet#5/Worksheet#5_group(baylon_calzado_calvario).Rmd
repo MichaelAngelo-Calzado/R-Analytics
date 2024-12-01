@@ -49,7 +49,7 @@ title
 
 
 ```{r}
-yea = page %>% html_nodes(".sc-5bc66c50-6.OOdsw.cli-title-metadata-item") %>% html_text()
+yea = page %>% html_nodes(".sc-300a8231-7.eaXxft.cli-title-metadata-item") %>% html_text()
 year <- str_extract_all(yea, "\\b\\d{4}(?:–\\d{4})?\\b") %>% unlist()
 year
 ```
@@ -62,7 +62,7 @@ rating
 
 
 ```{r}
-episode <- page %>% html_nodes(".sc-5bc66c50-6.OOdsw.cli-title-metadata-item") %>%
+episode <- page %>% html_nodes(".sc-300a8231-7.eaXxft.cli-title-metadata-item") %>%
 html_text()
 episodes <- str_extract_all(episode, "\\b\\d+ eps\\b") %>% unlist()
 episodes
@@ -547,4 +547,3 @@ pants_ranked %>%
 ```
 High Price + High Rating: Products ranked at the top of each list with high prices and ratings are generally regarded as premium and popular choices within the category.
 Lower Price + High Rating: Products with lower prices but high ratings indicate affordable yet well-received options, highlighting value for money.
-#ffdgbfhanafghrjfbrfsjvbmsnfhdjsdg
