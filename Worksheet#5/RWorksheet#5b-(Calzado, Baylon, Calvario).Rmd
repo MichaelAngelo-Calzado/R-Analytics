@@ -1,0 +1,390 @@
+---
+title: "RWorksheet#5_group.Rmd"
+author: "Baylon_Calvario_Calzado"
+date: "2024-11-20"
+output:
+  pdf_document:
+   latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r}
+library(polite)
+library(kableExtra)
+library(rmarkdown)
+library(httr)
+library(rvest)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+```
+
+```{r}
+urls <- c('https://www.amazon.com/dp/B09QBVD7BY/ref=sspa_dk_detail_1?psc=1&pd_rd_i=B09QBVD7BY&pd_rd_w=YErdA&content-id=amzn1.sym.8c2f9165-8e93-42a1-8313-73d3809141a2&pf_rd_p=8c2f9165-8e93-42a1-8313-73d3809141a2&pf_rd_r=YGK1ZMXTXRVX69S2S9T0&pd_rd_wg=0Q3Oe&pd_rd_r=a6744fca-8b92-42ea-9265-67523bb4445b&s=wireless&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWw', 'https://www.amazon.com/dp/B0D45JFN4T/ref=sspa_dk_detail_4?pd_rd_i=B0D45JFN4T&pd_rd_w=oDGD4&content-id=amzn1.sym.8c2f9165-8e93-42a1-8313-73d3809141a2&pf_rd_p=8c2f9165-8e93-42a1-8313-73d3809141a2&pf_rd_r=YX8BHC2AQF69PHF6Q3TF&pd_rd_wg=bAsOE&pd_rd_r=fc8429c3-aeeb-4478-981c-05ce1854b718&s=wireless&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWw&th=1', 'https://www.amazon.com/Fossil-Minimalist-Quartz-Stainless-Leather/dp/B079DD13WB/ref=sr_1_6?dib=eyJ2IjoiMSJ9.AFIUHMISy7v70cr9d3Uv3W7CmeBqIZ0bFcWM8jT7D1vdc1s0BuCDkQeIO2-fftK-0RTAjp11Cfs1Foy-NVgHVZx85Yeq4LqSL4KWqF8zlF3hjvqiKkrVI9yrQeKslO-NszyYSTKHrI9weEvmvEiRqTLJYkRe8Np_1wYb57Nea2zQpwjgMcK1P2rGDMx9J8sd5tD210nuDVe0q9Fc6UENeBMqHQSKVnD6H2c0EbYnMewC-kfq0U6g5ZjKsV-aX4tdzdppgn2cEe3dcMPusHLQbcUuENXSHxjw83_D3rvtV30.tw1zhG32m4HA4c6MvGhwJoeARtGe4KvcPOTxUVX7QB8&dib_tag=se&keywords=watch&qid=1733455501&sr=8-6&th=1', 'https://www.amazon.com/Fossil-Quartz-Stainless-Leather-Chronograph/dp/B017SN1OI8/ref=sr_1_8?dib=eyJ2IjoiMSJ9.AFIUHMISy7v70cr9d3Uv3W7CmeBqIZ0bFcWM8jT7D1vdc1s0BuCDkQeIO2-fftK-0RTAjp11Cfs1Foy-NVgHVZx85Yeq4LqSL4KWqF8zlF3hjvqiKkrVI9yrQeKslO-NszyYSTKHrI9weEvmvEiRqTLJYkRe8Np_1wYb57Nea2zQpwjgMcK1P2rGDMx9J8sd5tD210nuDVe0q9Fc6UENeBMqHQSKVnD6H2c0EbYnMewC-kfq0U6g5ZjKsV-aX4tdzdppgn2cEe3dcMPusHLQbcUuENXSHxjw83_D3rvtV30.tw1zhG32m4HA4c6MvGhwJoeARtGe4KvcPOTxUVX7QB8&dib_tag=se&keywords=watch&qid=1733455501&sr=8-8&th=1', 'https://www.amazon.com/Amazon-Essentials-Silver-Tone-Black-Strap/dp/B07YQFST6X/ref=sr_1_9?dib=eyJ2IjoiMSJ9.AFIUHMISy7v70cr9d3Uv3W7CmeBqIZ0bFcWM8jT7D1vdc1s0BuCDkQeIO2-fftK-0RTAjp11Cfs1Foy-NVgHVZx85Yeq4LqSL4KWqF8zlF3hjvqiKkrVI9yrQeKslO-NszyYSTKHrI9weEvmvEiRqTLJYkRe8Np_1wYb57Nea2zQpwjgMcK1P2rGDMx9J8sd5tD210nuDVe0q9Fc6UENeBMqHQSKVnD6H2c0EbYnMewC-kfq0U6g5ZjKsV-aX4tdzdppgn2cEe3dcMPusHLQbcUuENXSHxjw83_D3rvtV30.tw1zhG32m4HA4c6MvGhwJoeARtGe4KvcPOTxUVX7QB8&dib_tag=se&keywords=watch&qid=1733455501&sr=8-9&th=1', 'https://www.amazon.com/Tensky-Android-Waterproof-Pedometer-Activity/dp/B0DBY8KXCR/ref=sr_1_13_sspa?dib=eyJ2IjoiMSJ9.AFIUHMISy7v70cr9d3Uv3W7CmeBqIZ0bFcWM8jT7D1vdc1s0BuCDkQeIO2-fftK-0RTAjp11Cfs1Foy-NVgHVZx85Yeq4LqSL4KWqF8zlF3hjvqiKkrVI9yrQeKslO-NszyYSTKHrI9weEvmvEiRqTLJYkRe8Np_1wYb57Nea2zQpwjgMcK1P2rGDMx9J8sd5tD210nuDVe0q9Fc6UENeBMqHQSKVnD6H2c0EbYnMewC-kfq0U6g5ZjKsV-aX4tdzdppgn2cEe3dcMPusHLQbcUuENXSHxjw83_D3rvtV30.tw1zhG32m4HA4c6MvGhwJoeARtGe4KvcPOTxUVX7QB8&dib_tag=se&keywords=watch&qid=1733455501&sr=8-13-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9tdGY&th=1','https://www.amazon.com/Michael-Kors-Womens-Gold-Tone-MK3513/dp/B01BESQG9K/ref=sr_1_17?dib=eyJ2IjoiMSJ9.AFIUHMISy7v70cr9d3Uv3W7CmeBqIZ0bFcWM8jT7D1vdc1s0BuCDkQeIO2-fftK-0RTAjp11Cfs1Foy-NVgHVZx85Yeq4LqSL4KWqF8zlF3hjvqiKkrVI9yrQeKslO-NszyYSTKHrI9weEvmvEiRqTLJYkRe8Np_1wYb57Nea2zQpwjgMcK1P2rGDMx9J8sd5tD210nuDVe0q9Fc6UENeBMqHQSKVnD6H2c0EbYnMewC-kfq0U6g5ZjKsV-aX4tdzdppgn2cEe3dcMPusHLQbcUuENXSHxjw83_D3rvtV30.tw1zhG32m4HA4c6MvGhwJoeARtGe4KvcPOTxUVX7QB8&dib_tag=se&keywords=watch&qid=1733455501&sr=8-17&th=1', 'https://www.amazon.com/HAYLOU-Android-Watches-Fitness-Waterproof/dp/B09N6S6RFM/ref=sr_1_20_sspa?dib=eyJ2IjoiMSJ9.AFIUHMISy7v70cr9d3Uv3W7CmeBqIZ0bFcWM8jT7D1vdc1s0BuCDkQeIO2-fftK-0RTAjp11Cfs1Foy-NVgHVZx85Yeq4LqSL4KWqF8zlF3hjvqiKkrVI9yrQeKslO-NszyYSTKHrI9weEvmvEiRqTLJYkRe8Np_1wYb57Nea2zQpwjgMcK1P2rGDMx9J8sd5tD210nuDVe0q9Fc6UENeBMqHQSKVnD6H2c0EbYnMewC-kfq0U6g5ZjKsV-aX4tdzdppgn2cEe3dcMPusHLQbcUuENXSHxjw83_D3rvtV30.tw1zhG32m4HA4c6MvGhwJoeARtGe4KvcPOTxUVX7QB8&dib_tag=se&keywords=watch&qid=1733455501&sr=8-20-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9tdGY&psc=1')
+
+nameofproduct <- vector("list", length(urls))
+names <- vector("list", length(urls))
+ratings <- vector("list", length(urls))
+dates <- vector("list", length(urls))
+title <- vector("list", length(urls))
+text <- vector("list", length(urls))
+n <- vector("list", length(urls))
+```
+
+```{r}
+df <- list()
+
+for (i in seq_along(urls)) {
+    session <- bow(urls[i], user_agent = "Educational")
+    webpage <- scrape(session)
+  
+    
+    nam <- webpage %>% html_nodes(".a-profile-name") %>% html_text()
+    nam <- nam[!grepl("Fitbit Charge 6|AEAC Smart Watch", nam, ignore.case = TRUE)]
+    nam <- nam[nam != ""]
+    n[[i]] <- nam
+    name <- c() 
+    non_amazon_seen <- FALSE  
+    for (na in nam) {
+      if (na == "Amazon Customer") {
+
+        if (non_amazon_seen) {
+          name <- c(name, na)
+        }
+      } else {
+        name <- c(name, na)
+        non_amazon_seen <- TRUE
+        }
+    }
+    name <- name[!duplicated(name) | name == "Amazon Customer"]
+    names[[i]] <- name
+    
+        nameofproduct[[i]] <-  webpage %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct[[i]] <- rep(nameofproduct[[i]], length.out = length(names[[i]]))
+    
+    rate <- webpage %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati <- rate[!grepl("Previous page|Next page|Previous set of slides|Next set of slides", rate, ignore.case = TRUE)]
+    rat <- gsub(" out of 5 stars", "", rati)
+    rats <- rat
+    if (length(rats) > length(name)) {
+    rats <- tail(rats, length(name)) 
+    } else if (length(rats) < length(name)) {
+    rats <- c(rats, rep(NA, length(name) - length(rats)))
+    }
+
+    ratings[[i]] <- rats
+    
+    dat <- webpage %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date <- gsub("Reviewed.*on ", "", dat)
+    dates[[i]] <- date
+
+    titl <- webpage %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit <- gsub("Reviewed.*on ", "", titl)
+    ti <- gsub(".*stars\\s*", "", tit)
+    t <- gsub("\\s+", " ", ti)
+    title[[i]] <- t
+
+    tex <- webpage %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te <- gsub("\\n", " ", tex)
+    t <- gsub("\\s+", " ", te)
+    text[[i]] <- trimws(t)
+}
+    
+```
+```{r}
+cate <- c("Category 1: WATCH", "Category 2", "Category 3", "Category 4", "Category 5")
+category <- vector("list", length(cate))
+for (i in seq_along(cate)) {
+    category[[i]] <- cate[i]
+}
+for (i in seq_along(urls)) {
+    category[[i]] <- rep(category[[i]], length.out = length(names[[i]]))
+}
+```
+```{r}
+productnumbe <- c("Product 1", "Product 2", "Product 3", "Product 4", "Product 5", "Product 6", "Product 7", "Product 8", "Product 9", "Product 10")
+productnumber <- vector("list", length(productnumbe))
+for (i in seq_along(productnumbe)) {
+    productnumber[[i]] <- productnumbe[i]
+}
+for (i in seq_along(urls)) {
+    productnumber[[i]] <- rep(productnumber[[i]], length.out = length(names[[i]]))
+}
+```
+
+```{r}
+
+watch1 <- data.frame(Category = category[[1]],
+                     Product_number = productnumber[[1]],
+                      Name_of_Product = nameofproduct[[1]],
+                      Userame = names[[1]],
+                       Rating = ratings[[1]],
+                       Date = dates[[1]],
+                       Title_of_Review = title[[1]],
+                       Text_of_Review = text[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(watch1, 50)
+watch1 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+
+
+```{r}
+nama <- names[[2]]
+namez <- nama[!grepl("Amazon Customer|How to sleep monitoring", nama, ignore.case = TRUE)]
+producto <- productnumber[[2]]
+producto <- rep(producto, length.out = length(namez))
+produc <- nameofproduct[[2]]
+produc <- rep(produc, length.out = length(namez))
+cater <- category[[1]]
+ca <- rep(cater, length.out = length(namez))
+
+ratingz <- ratings[[2]]
+    if (length(ratingz) > length(namez)) {
+    ratingz <- tail(ratingz, length(namez)) 
+    } else if (length(ratingz) < length(namez)) {
+    ratingz <- c(ratingz, rep(NA, length(namez) - length(ratingz)))
+    }
+```
+```{r}
+watch2 <- data.frame(Category = ca,
+                     Product_number = producto,
+                      Name_of_Product = produc,
+                      Userame = namez,
+                       Rating = ratingz,
+                       Date = dates[[2]],
+                       Title_of_Review = title[[2]],
+                       Text_of_Review = text[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(watch2, 50)
+watch2 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+nama1 <- names[[3]]
+namez1 <- nama1[!grepl("Fossil Men's Minimalist", nama1, ignore.case = TRUE)]
+namez1 <- unique(namez1)
+namez1 <- namez1[-1]
+producto1 <- productnumber[[3]]
+producto1 <- rep(producto1, length.out = length(namez1))
+produc1 <- nameofproduct[[3]]
+produc1 <- rep(produc1, length.out = length(namez1))
+cater1 <- category[[1]]
+ca1 <- rep(cater1, length.out = length(namez1))
+
+ratingz1 <- ratings[[3]]
+    if (length(ratingz1) > length(namez1)) {
+    ratingz1 <- tail(ratingz1, length(namez1)) 
+    } else if (length(ratingz) < length(namez1)) {
+    ratingz1 <- c(ratingz1, rep(NA, length(namez1) - length(ratingz1)))
+    }
+```
+```{r}
+watch3 <- data.frame(Category = ca1,
+                     Product_number = producto1,
+                      Name_of_Product = produc1,
+                      Userame = namez1,
+                       Rating = ratingz1,
+                       Date = dates[[3]],
+                       Title_of_Review = title[[3]],
+                       Text_of_Review = text[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(watch3, 50)
+watch3 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+nama2 <- names[[4]]
+namez2 <- nama2[!grepl("Fossil Men's Grant", nama2, ignore.case = TRUE)]
+namez2 <- namez2[-(1:2)]
+producto2 <- productnumber[[4]]
+producto2 <- rep(producto2, length.out = length(namez2))
+produc2 <- nameofproduct[[4]]
+produc2 <- rep(produc2, length.out = length(namez2))
+cater2 <- category[[1]]
+ca2 <- rep(cater2, length.out = length(namez2))
+
+ratingz2 <- ratings[[4]]
+    if (length(ratingz2) > length(namez2)) {
+    ratingz2 <- tail(ratingz2, length(namez2)) 
+    } else if (length(ratingz2) < length(namez2)) {
+    ratingz2 <- c(ratingz2, rep(NA, length(namez2) - length(ratingz2)))
+    }
+```
+```{r}
+watch4 <- data.frame(Category = ca2,
+                     Product_number = producto2,
+                      Name_of_Product = produc2,
+                      Userame = namez2,
+                       Rating = ratingz2,
+                       Date = dates[[4]],
+                       Title_of_Review = title[[4]],
+                       Text_of_Review = text[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(watch4, 50)
+watch4 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+nama3 <- names[[5]]
+namez3 <- nama3[!grepl("Amazon Essentials Men's", nama3, ignore.case = TRUE)]
+namez3 <- namez3[-(1:2)]
+producto3 <- productnumber[[5]]
+producto3 <- rep(producto3, length.out = length(namez3))
+produc3 <- nameofproduct[[5]]
+produc3 <- rep(produc3, length.out = length(namez3))
+cater3 <- category[[1]]
+ca3 <- rep(cater3, length.out = length(namez3))
+
+ratingz3 <- ratings[[5]]
+    if (length(ratingz3) > length(namez3)) {
+    ratingz3 <- tail(ratingz3, length(namez3)) 
+    } else if (length(ratingz3) < length(namez3)) {
+    ratingz3<- c(ratingz3, rep(NA, length(namez3) - length(ratingz3)))
+    }
+```
+```{r}
+watch5 <- data.frame(Category = ca3,
+                     Product_number = producto3,
+                      Name_of_Product = produc3,
+                      Userame = namez3,
+                       Rating = ratingz3,
+                       Date = dates[[5]],
+                       Title_of_Review = title[[5]],
+                       Text_of_Review = text[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(watch5, 50)
+watch5 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+
+```{r}
+nama4 <- n[[6]]
+namez4 <- nama4[!grepl("Tensky smart watch", nama4, ignore.case = TRUE)]
+namez4 <- namez4[-(1:2)]
+namez4 <- unique(namez4)
+nr <- which(namez4 == "Latrisha Love") + 1
+namez4 <- append(namez4, "Placeholder", after = nr - 1)
+producto4 <- productnumber[[6]]
+producto4 <- rep(producto4, length.out = length(namez4))
+produc4 <- nameofproduct[[6]]
+produc4 <- rep(produc4, length.out = length(namez4))
+cater4 <- category[[1]]
+ca4 <- rep(cater4, length.out = length(namez4))
+
+ratingz4 <- ratings[[6]]
+    if (length(ratingz4) > length(namez4)) {
+    ratingz4 <- tail(ratingz4, length(namez4)) 
+    } else if (length(ratingz4) < length(namez4)) {
+    ratingz4<- c(ratingz4, rep(NA, length(namez4) - length(ratingz4)))
+    }
+```
+```{r}
+watch6 <- data.frame(Category = ca4,
+                     Product_number = producto4,
+                      Name_of_Product = produc4,
+                      Userame = namez4,
+                       Rating = ratingz4,
+                       Date = dates[[6]],
+                       Title_of_Review = title[[6]],
+                       Text_of_Review = text[[6]],
+                       stringsAsFactors = FALSE
+                       )
+head(watch6, 50)
+watch6 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+nama5 <- names[[7]]
+namez5 <- nama5[!grepl("Michael Kors Women's", nama5, ignore.case = TRUE)]
+namez5 <- namez5[-(1:2)]
+producto5 <- productnumber[[7]]
+producto5 <- rep(producto5, length.out = length(namez5))
+produc5 <- nameofproduct[[7]]
+produc5 <- rep(produc3, length.out = length(namez5))
+cater5 <- category[[1]]
+ca5 <- rep(cater5, length.out = length(namez5))
+
+ratingz5 <- ratings[[7]]
+    if (length(ratingz5) > length(namez5)) {
+    ratingz5 <- tail(ratingz5, length(namez5)) 
+    } else if (length(ratingz5) < length(namez5)) {
+    ratingz5<- c(ratingz5, rep(NA, length(namez5) - length(ratingz5)))
+    }
+```
+```{r}
+watch7 <- data.frame(Category = ca5,
+                     Product_number = producto5,
+                      Name_of_Product = produc5,
+                      Userame = namez5,
+                       Rating = ratingz5,
+                       Date = dates[[7]],
+                       Title_of_Review = title[[7]],
+                       Text_of_Review = text[[7]],
+                       stringsAsFactors = FALSE
+                       )
+head(watch7, 50)
+watch7 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+```{r}
+nama6 <- names[[8]]
+namez6 <- nama6[!grepl("How to Use", nama6, ignore.case = TRUE)]
+namez6 <- namez6[-(1:2)]
+producto6 <- productnumber[[8]]
+producto6 <- rep(producto6, length.out = length(namez6))
+produc6 <- nameofproduct[[8]]
+produc6 <- rep(produc6, length.out = length(namez6))
+cater6 <- category[[1]]
+ca6 <- rep(cater6, length.out = length(namez6))
+
+ratingz6 <- ratings[[8]]
+    if (length(ratingz6) > length(namez6)) {
+    ratingz6 <- tail(ratingz6, length(namez6)) 
+    } else if (length(ratingz6) < length(namez6)) {
+    ratingz6<- c(ratingz6, rep(NA, length(namez6) - length(ratingz6)))
+    }
+```
+```{r}
+watch8 <- data.frame(Category = ca6,
+                     Product_number = producto6,
+                      Name_of_Product = produc6,
+                      Userame = namez6,
+                       Rating = ratingz6,
+                       Date = dates[[8]],
+                       Title_of_Review = title[[8]],
+                       Text_of_Review = text[[8]],
+                       stringsAsFactors = FALSE
+                       )
+head(watch8, 50)
+watch8 %>%
+    kable("latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = "scale_down")
+```
+
+
+
+
+
+
