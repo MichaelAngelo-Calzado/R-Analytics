@@ -1,0 +1,921 @@
+---
+title: "RWorksheet#5_group.Rmd"
+author: "Baylon_Calvario_Calzado"
+date: "2024-11-20"
+output:
+  pdf_document:
+   latex_engine: xelatex
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(polite)
+library(kableExtra)
+library(rmarkdown)
+library(httr)
+library(rvest)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+```
+1. Do the Trend Analysis and Sentiment Analysis.
+**Trend Analysis**
+A skincare brand or seller on Amazon wants to identify trending skin whitening products to expand its inventory or improve its product offerings.
+Data Source:
+```{r}
+link = "https://www.amazon.com/s?k=skin+whitening+soap&crid=33984AA2LDHFB&sprefix=whitening+soup%2Caps%2C469&ref=nb_sb_ss_ts-doa-p_1_14"
+page = read_html(link)
+session <- bow(link, user_agent = "Educational")
+session
+```
+```{r}
+nam <- page %>% html_nodes(".a-color-state.a-text-bold") %>% html_text()
+search <- gsub('\\"', '', nam)
+search
+```
+```{r}
+productname <- page %>% html_nodes(".a-size-base-plus.a-color-base.a-text-normal") %>% html_text() %>% head(23)
+productname
+```
+```{r}
+star <- page %>% html_nodes(".a-icon.a-icon-star-small.a-star-small-4") %>% html_text() %>% head(23)
+star
+```
+```{r}
+numberofbuyers <- page %>% html_nodes(".a-size-base.s-underline-text") %>% html_text() %>% head(23)
+numberofbuyers
+```
+```{r}
+past <- page %>% html_nodes(".a-size-base.a-color-secondary") %>% html_text()
+pastmonth <- past[!grepl("Check each product|Ounce|Subscribe|FREE|Buying|List|Count|Typical|Shop|Currently|delivery|offers|stock|soon|off", past, ignore.case = TRUE)]
+head(pastmonth, 23)
+```
+```{r}
+urls2 <- c('https://www.amazon.com/Valitic-Remover-Vitamin-Collagen-Turmeric/dp/B09MFMCTRK/ref=sr_1_1?dib=eyJ2IjoiMSJ9.qsgrkssOr_kQBlCMX_3BOab0ttKyrfs__v1hb19j9wRxo3k9538JSr2u38fsWS3KPQ78H4GljGw2eWDa_C0IkhWRIRikZ7UyLUy7meLM6Ahqs8i9Tu2bNoM8hS_i0Mg0DXxURtUrPV7LcMeXNGCF8WT6IaJU5y8ttsBVOHmrXXWOO2-LulyMPOBRUzmGBVnGwlqTvav0-z0YT3V2oqHmGXaPIt6Q2iaAVqiT9euZdXooZeUZ2VfHczsVJd0bZkycboRMht0erjE_8bUalH2-5k1jbxESk9PAsJT5SWEau1g.V_T56FaOg5tb-m0DDuAQSrr9CuxeS79B0XCg5Bg0Cww&dib_tag=se&keywords=VALITIC+Kojic+Acid+Dark+Spot+Remover+Soap+Bars+with+Vitamin+C%2C+Retinol%2C+Collagen%2C+Turmeric+-+Original+Japanese+Complex+Infused+with+Hyaluronic+Acid%2C+Vitamin+E%2C+Shea+Butter%2C+Castile+Olive+Oil+%282+Pack%29&qid=1733723068&sr=8-1', 'https://www.amazon.com/Kojie-San-Skin-Brightening-Hyperpigmentation/dp/B00R602KOQ/ref=sr_1_1?dib=eyJ2IjoiMSJ9.XGzl-2rY73sj89ynItBxMEu2H6IIKYNUW1EZCfm3uASACoViupXz7NQcxiSlT7m7EgSBRXfeMtZS_bQHmgwQ0lV3N5_vayshLNXqYxNsgYIowGFeTg6MCF2HWxGDLba7Wb7lGkwgzURVgwjmAdVAXjqldWX-j6iHy_xEdBxRO3AJFtNHCP0e3LTPXo_E9THM4F2FE9QMY-oVDuQL9y-SvvemtDiz1JsRj7ZMHCTPOi6VCByE35bhEsZnPkCph5itUwCzqpywjaRZf3S7DOB5sPdtaoMGIvSImt8Vcq5A7jc.xrAuGxI9Y6Hu18We1VMvWwHe6xn6C6yyzJ3W2sjisTg&dib_tag=se&keywords=Kojie+San+Skin+and+Body+Brightening+Soap+-+Original+Kojic+Acid%2C+Dark+Spot+Remover+Bar+Soap+with+Glycerin+%26+Tea+Tree+Oil+-+65g+x+2+Bars&qid=1733723515&s=amazon-devices&sr=1-1', 'https://www.amazon.com/Inlifay-Kojic-Acid-Soap-Turmeric/dp/B0D6YRV788/ref=sr_1_1?crid=1H4IKAMS3NEVG&dib=eyJ2IjoiMSJ9.rVqo8KsPw2PbJB9KB4mRnOENF40LeaoCX9PLK3SVx0_FTlb5VuIQyag_IEO2iKwMkvki1Ca7JIOQCUeJHajuXi9DoAHJd8w_YCIfKGsHEA_q4Qexd183aB_Q5Vc4RPaInmu0gxgz2VoiK_sJ0xmGw2CpdL5EJ5qfqYQ9cx97iqlfFiORanSmfXB_xtgFPu0xGEvpx8CYbKVypXYs-v4402GnZhEB8BQhw1No2c4eW9Y.y8EgswkXmo3NqhhXvWjYPvHWHMXTW13C1qYJ_49T_MI&dib_tag=se&keywords=Inlifay+Kojic+Acid+Soap+Dark+Spot+Remover+%3A+Turmeric+Soap+with+Vitamin+C%2C+Vitamin+E%2C+Retinol%2C+Collagen%2C+Hyaluronic+Acid%2C+Moisturizing+for+Body+%26+Face&qid=1733723599&s=fiona-hardware&sprefix=inlifay+kojic+acid+soap+dark+spot+remover+turmeric+soap+with+vitamin+c%2C+vitamin+e%2C+retinol%2C+collagen%2C+hyaluronic+acid%2C+moisturizing+for+body+%26+face%2Ckindle-accessories%2C748&sr=1-1', 'https://www.amazon.com/VALITIC-Brightening-Turmeric-Vitamin-Collagen/dp/B0CBSDZ3F5/ref=sr_1_1?crid=1ZBGZML44ZUM4&dib=eyJ2IjoiMSJ9.uHuIMjhk4Ql0z2sCHJDROm8R5WV-C5lGuCbeyFbLbyzcmQTSt63yLH7k-Pvaz6xr1ppDEpD4aYpAVP3dn_hRGyXYckHOB92Fy7W45mQC2Ti_lYpeMuBV3fVDegKkcref1ppvrcQp4CVWN7CISqOGaoJ3KyhSmx0rE4Vj7bHDQ1Ygn3jE54Dy8CvVPnCmJiO2rE2w3u9EYM-S5VvMAB8dIhcvdhrbU6ua3zZ4hJWOU172ft30oPjdSmh87JtQNxuZcXwPnp_g1oWV9iX41w8Qskz7bVqIoMiHjlNCxs12hIY.USGywCp5UUzJLODn-J35-LFUzi-60HHxxeBeFn6KAH0&dib_tag=se&keywords=VALITIC+Brightening+Lemon+%26+Turmeric+Kojic+Acid+Soap+with+Vitamin+C%2C+Retinol%2C+Collagen+-+Original+Japanese+Complex+Infused+with+Hyaluronic+Acid%2C+Vitamin+E%2C+Shea+Butter%2C+Castile+Olive+Oil+%282+Pack%29&qid=1733723665&s=amazon-devices&sprefix=valitic+brightening+lemon+%26+turmeric+kojic+acid+soap+with+vitamin+c%2C+retinol%2C+collagen+-+original+japanese+complex+infused+with+hyaluronic+acid%2C+vitamin+e%2C+shea+butter%2C+castile+olive+oil+2+pack+%2Camazon-devices%2C636&sr=1-1', 'https://www.amazon.com/Original-Kojie-Facial-Beauty-Soap/dp/B08P3YFR7B/ref=sr_1_1?crid=3AI8ZMXWAYHTD&dib=eyJ2IjoiMSJ9.Cmyt9jacAlo7LHlRYhMPX9pUwuNUTO-kBgSaWgBuyLPmTrGz6gx5QX1OkC_lIAF8p5h6nmoLjkem-v89gDlqcrgqxj7lDuttkJ5jEnQg4pqlFV4asGvtDawn4jcttDxnWvnUH6kBSqEHRwFAwySNuHWBpL8Dt-iN6tOGL_hsxQNiGw4ZhXkkO6qSfdTN5rqjdVztr_bjoYSmq51VXtRdMMtWMhHCWPyyJlRpHeeg6A5xJLDJ9lTUzOjdY6hztVljFGhdj8aFcHEmcicY_1pZc76XF-DWIfdfbKMgXmQAyRc.4pJAj3mpbbGAh6DAq038YdVv7LaRm3cydg28LpzyO5Q&dib_tag=se&keywords=Kojie+San+Skin+Brightening+Soap+-+Original+Kojic+Acid+Soap+that+Reduces+Dark+Spots%2C+Hyperpigmentation%2C+%26+Scars+with+Exfoliating+Soap+Net+Included+-+65g+x+2+Bars&qid=1733723732&sprefix=kojie+san+skin+brightening+soap+-+original+kojic+acid+soap+that+reduces+dark+spots%2C+hyperpigmentation%2C+%26+scars+with+exfoliating+soap+net+included+-+65g+x+2+bars%2Caps%2C611&sr=8-1')
+
+nameofproduct2 <- vector("list", length(urls2))
+names2 <- vector("list", length(urls2))
+ratings2 <- vector("list", length(urls2))
+dates2 <- vector("list", length(urls2))
+title2 <- vector("list", length(urls2))
+text2 <- vector("list", length(urls2))
+n2 <- vector("list", length(urls2))
+```
+```{r}
+df <- list()
+
+for (i in seq_along(urls2)) {
+    session <- bow(urls2[i], user_agent = "Educational")
+    webpage2 <- scrape(session)
+  
+    
+    nam2 <- webpage2 %>% html_nodes(".a-profile-name") %>% html_text()
+    nam2 <- nam2[!grepl("Fitbit Charge 6|AEAC Smart Watch", nam2, ignore.case = TRUE)]
+    nam2 <- nam2[nam2 != ""]
+    n2[[i]] <- nam2
+    name2 <- c() 
+    non_amazon_seen2 <- FALSE  
+    for (na2 in nam2) {
+      if (na2 == "Amazon Customer") {
+
+        if (non_amazon_seen2) {
+          name2 <- c(name2, na2)
+        }
+      } else {
+        name2 <- c(name2, na2)
+        non_amazon_seen2 <- TRUE
+        }
+    }
+    name2 <- name2[!duplicated(name2) | name2 == "Amazon Customer"]
+    names2[[i]] <- name2
+    
+        nameofproduct2[[i]] <-  webpage2 %>%
+  html_nodes(".a-size-large.product-title-word-break") %>%
+  html_text()
+    nameofproduct2[[i]] <- rep(nameofproduct2[[i]], length.out = length(names2[[i]]))
+    
+    rate2 <- webpage2 %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati2 <- rate2[!grepl("Previous page|Next page|Previous set of slides|Next set of slides", rate2, ignore.case = TRUE)]
+    rat2 <- gsub(" out of 5 stars", "", rati2)
+    rats2 <- rat2
+    if (length(rats2) > length(name2)) {
+    rats2 <- tail(rats2, length(name2)) 
+    } else if (length(rats2) < length(name2)) {
+    rats2 <- c(rats2, rep(NA, length(name2) - length(rats2)))
+    }
+
+    ratings2[[i]] <- rats2
+    
+    dat2 <- webpage2 %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date2 <- gsub("Reviewed.*on ", "", dat2)
+    dates2[[i]] <- date2
+
+    titl2 <- webpage2 %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit2 <- gsub("Reviewed.*on ", "", titl2)
+    ti2 <- gsub(".*stars\\s*", "", tit2)
+    t2 <- gsub("\\s+", " ", ti2)
+    title2[[i]] <- t2
+
+    tex2 <- webpage2 %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te2 <- gsub("\\n", " ", tex2)
+    t2 <- gsub("\\s+", " ", te2)
+    text2[[i]] <- trimws(t2)
+}
+    
+```
+```{r}
+urls2b <- c('https://www.amazon.com/Koji-White-Kojic-Brightening-Paraben-Free/dp/B071KNC9Q9/ref=sr_1_1_sspa?crid=2D7IH39VDTBQA&dib=eyJ2IjoiMSJ9.2-Np7i0mhX2IWY1no7d3B_UmVfFHcmljIuYL27nN2Gw37QsgTOgkm30q9k9tSFyLDZVbJgwptyQUkfG1GP8uf9XCC1cA0QB3QCFeOf6CXwyVSKyVITab3vpVQnbTH9LPoTdLAWb0bT6sVZWq9SgDHj8Jh8UkHWumsxgy4gqtffP1avWGCA4etIeaP6CVr-gr-M2YNCNFCIoVaG2nQ9BTBPl4Ea0cUz6VNs46s8nY3ghpj15VvKXLdrGi_NE6od4eL9i0rYDxKJoNunbh1YfYdW597jV2LKViY-B6s3pF_cg.pv7_NBqSgJTQwgx6hN_VFYz5mgNmesPCLBDb4bxDKt0&dib_tag=se&keywords=Koji+White+Pure+Kojic+Acid+Skin+Brightening+Soap+%7C+Glycerin+Soap+Bar+for+Exfoliating+Face+with+Tea+Tree%2C+Coconut+Oil+%7C+Sun+Damage+Skin+with+Hyaluronic+Acid%2C+Vitamin+C%2C+Vegan%2C+2.82+oz+%28Pack+of+2%29&qid=1733723838&sprefix=%2Caps%2C1312&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1', 'https://www.amazon.com/Caro-White-Beauty-200Gr-37323/dp/B082ZQ377L/ref=sr_1_1?crid=309971HO8SNX8&dib=eyJ2IjoiMSJ9.CBMu1FtkHoTPmT_V2P2UvyWBj8kf7PJeT5lsZgGIU2WYzSJa4i4pFe6G-ILbHsR7Hy7EZuF0OEbGnFc2er3y_AlSPVn11QqtphMC5NKRj0RNfQmuk3IHo7AZX1n9aienjra1mtrrpnngWAw84u9BccxKiVAGZ_9LtIn7246ZxDOggVAIdbPPQ0N4GYD3egUEprjzGgWIer4IAtC9Dek-Y7sgl4RVO0CxXpYUW2ID9kq9KXY9lZ1h9GMoMy4xxotuXNDG2hPmSrKl5EDL-WV0pwCG17RjOaCQV_yv_KVNduY.Tnej6VrPtvwi0VixUjIhJvdzDT9sjCanOviAsm6spBA&dib_tag=se&keywords=Caro+White+Beauty+Skin+Tone+Soap+200Gr+37323+7oz&qid=1733724105&sprefix=caro+white+beauty+skin+tone+soap+200gr+37323+7oz%2Caps%2C570&sr=8-1', 'https://www.amazon.com/Kojie-San-Skin-Brightening-Hyper-pigmentation/dp/B08PPRK2T8/ref=sr_1_1?crid=126BDBYYMSIHG&dib=eyJ2IjoiMSJ9.Trnx9wzO_vu_6XHP4RbWlOIzW2t6LXMFpqKMGDseoXwKqc-J1PLQRBSMbSFoiJnxGLhNzW0R7evDwD3M3-tQIKrgXPzNbnDsylCpv6kcH6k6GDIe9DCt1Q7iZw8aripAgiR3gzEpgXagQ73otmlt0Zq-dDRPzIQVuaMm0Y4FJ_fTEM20-VbHVV6YX0m05EDldVztr_bjoYSmq51VXtRdMER9PO5Zii6KufWm4AV3k4BIo7BWiz7rnsZIGWtI6bhlZyXRanyx-lmiLcyqJX_u3oGJ5p4L-CdqWok-sEd7H3E.93TK9mxgJRi-pcUCYpT3bkxDwdg_owIvJKp4VZUMVrQ&dib_tag=se&keywords=Kojie+San+Skin+Brightening+Soap+-+Original+Kojic+Acid%2C+Dark+Spot+Remover+Bar+Soap+with+Coconut+%26+Tea+Tree+Oil+%E2%80%93+100g+x+3+Bars&qid=1733724185&sprefix=kojie+san+skin+brightening+soap+-+original+kojic+acid%2C+dark+spot+remover+bar+soap+with+coconut+%26+tea+tree+oil+100g+x+3+bars%2Caps%2C752&sr=8-1', 'https://www.amazon.com/Premium-Maximum-Brightening-Peeling-Glutathione/dp/B09X23Y5B5/ref=sr_1_5?crid=1YT9TLCL85ANL&dib=eyJ2IjoiMSJ9.g7zoIE-_0h4zMFC1Bp2kfbg1TcZt6ARccg19YuarV_8qQaafnM1TE5NZC7izRDGFhsXpPM9XaFeIr0Bympw1zIezgNR6cARaP_zeN4Nez8yy5igT9umA92o1f_-3lbk84ncjhYxkzWoRtbv_yOTfsDs_Q0pWsXz4iaKc-2snjGt16TCcLZ_wX5ZF34fVCMZi8CHvD_9wT9WAbXsb6eKQwXJ9Ul59oSt_wO4c1vqqBxeppdAdnGKBuz86FhUcEvw384sAGePji8QTPQeGqjHM4tDsrEocx7Idfld9cMKwmRQ.WtofwCxHCem4WRjYiKogTDTu1oBxz-m3Pujy_7WzLCs&dib_tag=se&keywords=Premium+Maximum+Lightening+and+Peeling+Soap+with+Glutathione%2C+Arbutin%2C+and+Kojic+acid%2C+Rejuvenates+and+Clears+Skin+-+65+Gram+Bar&qid=1733724346&sprefix=premium+maximum+lightening+and+peeling+soap+with+glutathione%2C+arbutin%2C+and+kojic+acid%2C+rejuvenates+and+clears+skin+-+65+gram+bar%2Caps%2C672&sr=8-5', 'https://www.amazon.com/Koji-White-Brightening-Moisturizer-Dermatologist/dp/B07DMHNYV7/ref=sr_1_1_sspa?crid=1J1K4QZ5YR7GQ&dib=eyJ2IjoiMSJ9.QFcUMvuDqnVqi0Z3NaINPBjLu5tmXtJGabMfSYDRlGkQOlUjBZbW0xNeR_dakbTpXnTeSk4UjYQKdVPF2Zpou5e2oe0lGN65vUWJ-A4HagceYnQLpB9MQ7janXXcP0jAVhG-Edzmd2pHlf_xsh77MomYBzMnoBWPssaybDbwN9iE-EszPA3jAIJhWUtaBLBUoP8nk58NjP7Guswo5oG4wkLJubezg-4yMy4m4pSZm4ydv9M8Z7xINbvIbUPzNGHKqHfudStgeOx8Db-c7vwlUruscdUvuYi9s2WUQgwsInw.lq3ZqTFDL9H1buXNw9toFKlGC3G_h-Vm3PrjHM_e8XY&dib_tag=se&keywords=Koji+White+Kojic+Acid+%26+Collagen+Skin+Brightening+Soap+for+Face+%26+Natural+Glowing+Skin+-+Moisturizer%2C+Body+Cleansing+Bar%2C+Reduce+the+Appearance+of+Wrinkles%2C+Vegan%2C+Paraben-Free%2C+2.82+oz+%282+Bars%29&qid=1733724488&sprefix=koji+white+kojic+acid+%26+collagen+skin+brightening+soap+for+face+%26+natural+glowing+skin+-+moisturizer%2C+body+cleansing+bar%2C+reduce+the+appearance+of+wrinkles%2C+vegan%2C+paraben-free%2C+2.82+oz+2+bars+%2Caps%2C1124&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1')
+nameofproduct2b <- vector("list", length(urls2b))
+names2b <- vector("list", length(urls2b))
+ratings2b <- vector("list", length(urls2b))
+dates2b <- vector("list", length(urls2b))
+title2b <- vector("list", length(urls2b))
+text2b <- vector("list", length(urls2b))
+n2b <- vector("list", length(urls2b))
+```
+```{r}
+df <- list()
+
+for (i in seq_along(urls2b)) {
+    session <- bow(urls2b[i], user_agent = "Educational")
+    webpage2b <- scrape(session)
+  
+    
+    nam2b <- webpage2b %>% html_nodes(".a-profile-name") %>% html_text()
+    nam2b <- nam2b[!grepl("Fitbit Charge 6|AEAC Smart Watch", nam2b, ignore.case = TRUE)]
+    nam2b <- nam2b[nam2b != ""]
+    n2b[[i]] <- nam2b
+    name2b <- c() 
+    non_amazon_seen2b <- FALSE  
+    for (na2b in nam2b) {
+      if (na2b == "Amazon Customer") {
+
+        if (non_amazon_seen2b) {
+          name2b <- c(name2b, na2b)
+        }
+      } else {
+        name2b <- c(name2b, na2b)
+        non_amazon_seen2b <- TRUE
+        }
+    }
+    name2b <- name2b[!duplicated(name2b) | name2b == "Amazon Customer"]
+    names2b[[i]] <- name2b
+    
+        nameofproduct2b[[i]] <-  webpage2b %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct2b[[i]] <- rep(nameofproduct2b[[i]], length.out = length(names2b[[i]]))
+    
+    rate2b <- webpage2b %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati2b <- rate2b[!grepl("Previous page|Next page|Previous set of slides|Next set of slides", rate2b, ignore.case = TRUE)]
+    rat2b <- gsub(" out of 5 stars", "", rati2b)
+    rats2b <- rat2b
+    if (length(rats2b) > length(name2b)) {
+    rats2b <- tail(rats2b, length(name2b)) 
+    } else if (length(rats2b) < length(name2b)) {
+    rats2b <- c(rats2b, rep(NA, length(name2b) - length(rats2b)))
+    }
+
+    ratings2b[[i]] <- rats2b
+    
+    dat2b <- webpage2b %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date2b <- gsub("Reviewed.*on ", "", dat2b)
+    dates2b[[i]] <- date2b
+
+    titl2b <- webpage2b %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit2b <- gsub("Reviewed.*on ", "", titl2b)
+    ti2b <- gsub(".*stars\\s*", "", tit2b)
+    t2b <- gsub("\\s+", " ", ti2b)
+    title2b[[i]] <- t2b
+
+    tex2b <- webpage2b %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te2b <- gsub("\\n", " ", tex2b)
+    t2b <- gsub("\\s+", " ", te2b)
+    text2b[[i]] <- trimws(t2b)
+}
+```
+```{r}
+names2
+```
+
+```{r}
+nama9 <- names2[[1]]
+namez9 <- nama9[!grepl("There is a reason", nama9, ignore.case = TRUE)]
+namez9 <- namez9[-(1:2)]
+producto9 <- productnumber2[[1]]
+producto9 <- rep(producto9, length.out = length(namez9))
+produc9 <- nameofproduct2[[1]]
+produc9 <- rep(produc9, length.out = length(namez9))
+cater9 <- category2[[2]]
+ca9 <- rep(cater9, length.out = length(namez9))
+
+ratingz9 <- ratings2[[1]]
+    if (length(ratingz9) > length(namez9)) {
+    ratingz9 <- tail(ratingz9, length(namez9)) 
+    } else if (length(ratingz9) < length(namez9)) {
+    ratingz9<- c(ratingz9, rep(NA, length(namez9) - length(ratingz9)))
+    }
+```
+```{r}
+soap1 <- data.frame(Name_of_Product = produc9,
+                      Userame = namez9,
+                       Rating = ratingz9,
+                       Date = dates2[[1]],
+                       Title_of_Review = title2[[1]],
+                       Text_of_Review = text2[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(soap1, 50)
+```
+```{r}
+nama10 <- names2[[2]]
+namez10 <- nama10[!grepl("Kojie San Soap", nama10, ignore.case = TRUE)]
+namez10 <- namez10[-(1:2)]
+producto10 <- productnumber2[[2]]
+producto10 <- rep(producto10, length.out = length(namez10))
+produc10 <- nameofproduct2[[2]]
+produc10 <- rep(produc10, length.out = length(namez10))
+cater10 <- category2[[2]]
+ca10 <- rep(cater10, length.out = length(namez10))
+
+ratingz10 <- ratings2[[2]]
+    if (length(ratingz10) > length(namez10)) {
+    ratingz10 <- tail(ratingz10, length(namez10)) 
+    } else if (length(ratingz10) < length(namez10)) {
+    ratingz10<- c(ratingz10, rep(NA, length(namez10) - length(ratingz10)))
+    }
+```
+
+```{r}
+soap2 <- data.frame(Name_of_Product = produc10,
+                      Userame = namez10,
+                       Rating = ratingz10,
+                       Date = dates2[[2]],
+                       Title_of_Review = title2[[2]],
+                       Text_of_Review = text2[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(soap2, 50)
+```
+```{r}
+nama11 <- names2[[3]]
+namez11 <- nama11[!grepl("Honest review of soap", nama11, ignore.case = TRUE)]
+namez11 <- namez11[-(1:2)]
+producto11 <- productnumber2[[3]]
+producto11 <- rep(producto11, length.out = length(namez11))
+produc11 <- nameofproduct2[[3]]
+produc11 <- rep(produc11, length.out = length(namez11))
+cater11 <- category2[[2]]
+ca11 <- rep(cater11, length.out = length(namez11))
+
+ratingz11 <- ratings2[[3]]
+    if (length(ratingz11) > length(namez11)) {
+    ratingz11 <- tail(ratingz11, length(namez11)) 
+    } else if (length(ratingz11) < length(namez11)) {
+    ratingz11<- c(ratingz11, rep(NA, length(namez11) - length(ratingz11)))
+    }
+```
+```{r}
+soap3 <- data.frame(Name_of_Product = produc11,
+                      Userame = namez11,
+                       Rating = ratingz11,
+                       Date = dates2[[3]],
+                       Title_of_Review = title2[[3]],
+                       Text_of_Review = text2[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(soap3, 50)
+```
+```{r}
+nama12 <- names2[[4]]
+namez12 <- nama12[!grepl("Lemon Turmeric and", nama12, ignore.case = TRUE)]
+namez12 <- namez12[-(1:2)]
+producto12 <- productnumber2[[4]]
+producto12 <- rep(producto12, length.out = length(namez12))
+produc12 <- nameofproduct2[[4]]
+produc12 <- rep(produc12, length.out = length(namez12))
+cater12 <- category2[[2]]
+ca12 <- rep(cater12, length.out = length(namez12))
+
+ratingz12 <- ratings2[[4]]
+    if (length(ratingz12) > length(namez12)) {
+    ratingz12 <- tail(ratingz12, length(namez12)) 
+    } else if (length(ratingz12) < length(namez12)) {
+    ratingz12<- c(ratingz12, rep(NA, length(namez12) - length(ratingz12)))
+    }
+```
+```{r}
+soap4 <- data.frame(Name_of_Product = produc12,
+                      Userame = namez12,
+                       Rating = ratingz12,
+                       Date = dates2[[4]],
+                       Title_of_Review = title2[[4]],
+                       Text_of_Review = text2[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(soap4, 50)
+```
+```{r}
+nama13 <- names2[[5]]
+namez13 <- nama13[!grepl("Kojie San Soap", nama13, ignore.case = TRUE)]
+namez13 <- namez13[-(1:2)]
+producto13 <- productnumber2[[5]]
+producto13 <- rep(producto13, length.out = length(namez13))
+produc13 <- nameofproduct2[[5]]
+produc13 <- rep(produc13, length.out = length(namez13))
+cater13 <- category2[[2]]
+ca13 <- rep(cater13, length.out = length(namez13))
+
+ratingz13 <- ratings2[[5]]
+    if (length(ratingz13) > length(namez13)) {
+    ratingz13 <- tail(ratingz13, length(namez13)) 
+    } else if (length(ratingz13) < length(namez13)) {
+    ratingz13<- c(ratingz13, rep(NA, length(namez13) - length(ratingz13)))
+    }
+```
+```{r}
+soap5 <- data.frame(Name_of_Product = produc13,
+                      Userame = namez13,
+                       Rating = ratingz13,
+                       Date = dates2[[5]],
+                       Title_of_Review = title2[[5]],
+                       Text_of_Review = text2[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(soap5, 50)
+```
+```{r}
+names2b
+n2b
+```
+```{r}
+nama14 <- n2b[[1]]
+namez14 <- nama14[!grepl("Koji White_Pure", nama14, ignore.case = TRUE)]
+namez14 <- namez14[-(1:2)]
+namez14 <- unique(namez14)
+producto14 <- productnumber2b[[1]]
+producto14 <- rep(producto14, length.out = length(namez14))
+produc14 <- nameofproduct2b[[1]]
+produc14 <- rep(produc14, length.out = length(namez14))
+cater14 <- category2b[[1]]
+ca14 <- rep(cater14, length.out = length(namez14))
+
+ratingz14 <- ratings2b[[1]]
+    if (length(ratingz14) > length(namez14)) {
+    ratingz14 <- tail(ratingz14, length(namez14)) 
+    } else if (length(ratingz14) < length(namez14)) {
+    ratingz14 <- c(ratingz14, rep(NA, length(namez14) - length(ratingz14)))
+    }
+```
+```{r}
+soap6 <- data.frame(Name_of_Product = produc14,
+                      Userame = namez14,
+                       Rating = ratingz14,
+                       Date = dates2b[1],
+                       Title_of_Review = title2b[[1]],
+                       Text_of_Review = text2b[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(soap6, 50)
+```
+
+```{r}
+nama15 <- n2b[[2]]
+namez15 <- nama15[!grepl("BAIMEI jade roller", nama15, ignore.case = TRUE)]
+namez15 <- namez15[-(1:2)]
+producto15 <- productnumber2b[[2]]
+producto15 <- rep(producto15, length.out = length(namez15))
+produc15 <- nameofproduct2b[[2]]
+produc15 <- rep(produc15, length.out = length(namez15))
+cater15 <- category2b[[2]]
+ca15 <- rep(cater15, length.out = length(namez15))
+
+ratingz15 <- ratings2b[[2]]
+    if (length(ratingz15) > length(namez15)) {
+    ratingz15 <- tail(ratingz15, length(namez15)) 
+    } else if (length(ratingz15) < length(namez15)) {
+    ratingz15 <- c(ratingz15, rep(NA, length(namez15) - length(ratingz15)))
+    }
+```
+```{r}
+soap7 <- data.frame(Name_of_Product = produc15,
+                      Userame = namez15,
+                       Rating = ratingz15,
+                       Date = dates2b[[2]],
+                       Title_of_Review = title2b[[2]],
+                       Text_of_Review = text2b[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(soap7, 50)
+```
+```{r}
+nama16 <- names2b[[3]]
+namez16 <- nama16[!grepl("Kojie San Zero", nama16, ignore.case = TRUE)]
+namez16 <- namez16[-(1:2)]
+producto16 <- productnumber2b[[3]]
+producto16 <- rep(producto16, length.out = length(namez16))
+produc16 <- nameofproduct2b[[3]]
+produc16 <- rep(produc16, length.out = length(namez16))
+cater16 <- category2b[[3]]
+ca16 <- rep(cater16, length.out = length(namez16))
+
+ratingz16 <- ratings2b[[3]]
+    if (length(ratingz16) > length(namez16)) {
+    ratingz16 <- tail(ratingz16, length(namez16)) 
+    } else if (length(ratingz16) < length(namez16)) {
+    ratingz16<- c(ratingz16, rep(NA, length(namez16) - length(ratingz16)))
+    }
+```
+```{r}
+soap8 <- data.frame(Name_of_Product = produc16,
+                      Userame = namez16,
+                       Rating = ratingz16,
+                       Date = dates2b[[3]],
+                       Title_of_Review = title2b[[3]],
+                       Text_of_Review = text2b[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(soap8, 50)
+```
+```{r}
+nama17 <- n2b[[4]]
+namez17 <- nama17[!grepl("Why Im OBSESSED", nama17, ignore.case = TRUE)]
+namez17 <- namez17[-(1:2)]
+produc17 <- nameofproduct2b[[4]]
+produc17 <- rep(produc17, length.out = length(namez17))
+
+ratingz17 <- ratings2b[[4]]
+    if (length(ratingz17) > length(namez17)) {
+    ratingz17 <- tail(ratingz17, length(namez17)) 
+    } else if (length(ratingz17) < length(namez17)) {
+    ratingz17<- c(ratingz17, rep(NA, length(namez17) - length(ratingz17)))
+    }
+```
+```{r}
+soap9 <- data.frame(Name_of_Product = produc17,
+                      Userame = namez17,
+                       Rating = ratingz17,
+                       Date = dates2b[[4]],
+                       Title_of_Review = title2b[[4]],
+                       Text_of_Review = text2b[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(soap9, 50)
+```
+```{r}
+nama18 <- names2b[[5]]
+namez18 <- nama18[!grepl("Koji White_Kojic Acid", nama18, ignore.case = TRUE)]
+namez18 <- namez18[-(1:2)]
+produc18 <- nameofproduct2b[[5]]
+produc18 <- rep(produc18, length.out = length(namez18))
+cater18 <- category2b[[5]]
+ca18 <- rep(cater18, length.out = length(namez18))
+
+ratingz18 <- ratings2b[[5]]
+    if (length(ratingz18) > length(namez18)) {
+    ratingz18 <- tail(ratingz18, length(namez18)) 
+    } else if (length(ratingz18) < length(namez18)) {
+    ratingz18 <- c(ratingz18, rep(NA, length(namez18) - length(ratingz18)))
+    }
+```
+```{r}
+soap10 <- data.frame(Name_of_Product = produc18,
+                      Userame = namez18,
+                       Rating = ratingz18,
+                       Date = dates2b[[5]],
+                       Title_of_Review = title2b[[5]],
+                       Text_of_Review = text2b[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(soap10, 50)
+```
+```{r}
+urls3 <- c('https://www.amazon.com/PIPIHUA-Turmeric-Vitamin-Retinol-Collagen/dp/B0C1NPCY97/ref=sr_1_1?crid=1ZMPDKS1QH9K5&dib=eyJ2IjoiMSJ9.Fxgh3vICBveYPZkkPZCqpdlIr6YlhwJbjCg_UqWDhmtKyORuPdJqxHUmQo1WTvNZIN0xbdYStNbQXgJqyNppChCOIM0SC0MGOsAe_BOf9NjW49pu28B9QxaiLObkQR99bSEBBr7rsHVD9wxLfdj2Zs6yYPfXZVtKU685xV6EPb1ZYhdPolnmXhnDiU3z8XVAEU4Q2yAch6cHAh0ef3O60wfKJ_tIs-pJGqPzG3U0nGHCzccpdPbTgS6GuqVYEJomBKYKAektUDjpBmvu-rtZQiGg3IVTrt-AShrfS8M9x-g.7_qcyRz3RcFA0b7IAAqtQfpMF3Hgj0AvATeFI3C_ADw&dib_tag=se&keywords=PIPIHUA+Kojic+Acid+Soap+-+Turmeric+Soap+with+Turmeric+%26+Lemon+%26+Collagen+%26+Hyaluronic+Acid+%26+Glutathione&qid=1733752435&sprefix=pipihua+kojic+acid+soap+-+turmeric+soap+with+turmeric+%26+lemon+%26+collagen+%26+hyaluronic+acid+%26+glutathione%2Caps%2C486&sr=8-1', 'https://www.amazon.com/Papaya-Soap-Face-Body-Wash/dp/B0CQRVCP55/ref=sr_1_5?crid=10E3WE037GBJ0&dib=eyJ2IjoiMSJ9.XgWpBNqYOeuXQWOROt94WF-rN11coDwWnfxcicansICMjJS7XFSj85N15HShuv5G14JWjkInDSoWFoRmtiVN2uMA9rqEP-KkjRP3MuMnqdsTBc_3ofM_o8pkKmnBWhtYSOoxe8E16J7WaXfWIy-txhjurFOnOM3IapRhqzAbiwzKCHTQO1PBkR3TiiEuhfgF5e4khorcjlghqirbCWmPFbLg0-S8GAlx7D65ZWPefDGD0ccIRO8A-y0bLguWNj1Q_SQl6cgj3ByutZAGZaTRTNUSptAVzzzM06enxexVumo.86sPcrO6wKWBNO4UiPXyDz6Mhkt-5UIiU9QMM5iN5PY&dib_tag=se&keywords=Papaya+Soap+Face+%26+Body+Wash+%E2%80%93+Skin+Brightening+Papaya+Soap+Bar+for+Dark+Spots+%E2%80%93+Reduce+Acne%2C+Cleanse+Scars%2C+%26+Even+Skin+Tone+%E2%80%93+with+Turmeric%2C+Kojic+Acid+%26+Essential+Oils+%E2%80%93+for+All+Skin+Types&qid=1733752569&sprefix=papaya+soap+face+%26+body+wash+skin+brightening+papaya+soap+bar+for+dark+spots+reduce+acne%2C+cleanse+scars%2C+%26+even+skin+tone+with+turmeric%2C+kojic+acid+%26+essential+oils+for+all+skin+types%2Caps%2C662&sr=8-5', 'https://www.amazon.com/Kojic-Acid-Soap-Hyperpigmentation-All-Natural/dp/B0DKDGPL96/ref=sr_1_1?crid=39KZ8NFATVDZS&dib=eyJ2IjoiMSJ9.hBbnSngXLqikxbYDIYWxkBEe4zunm_aEL2hI2nrTw497hW1Xp9naQ8autYn4OEg4TZZ8H5Bzby9RuvKrr_pC658VQv32_4D0QtHHN7_H0tEIJNHEAB1Lab68BD8E6gu2pE3n0ytkF4PxlUnz435fhQv0T0j4er0ujDMFO2xFoY1Ry7MRJSB22KbgO-QFPZiaRMbaL0HNHnVRVb7hBDYFOftFaLke-4lYrHnSvEvUG_qIgl1oNbwbqBlgqtmowBIK7hqxFMHZ3dMspepWjOO6m76XF-DWIfdfbKMgXmQAyRc.bIvkdSZuxlx_Y4Hj8IlOkm4Sa4yGPqeMfBOPC0vIEio&dib_tag=se&keywords=Kojic+Acid+Soap+for+Hyperpigmentation+-+All-Natural+Kojic+Acid+Turmeric+Soap+Bars+-+Skin+Brightening+Soap+Bar+Reduces+Dark+Spots+-+Skin+Lightening+Soap+with+Vitamin+C%2C+Retinol%2C+Collagen+-100g+x+2+Bars&qid=1733752677&sprefix=kojic+acid+soap+for+hyperpigmentation+-+all-natural+kojic+acid+turmeric+soap+bars+-+skin+brightening+soap+bar+reduces+dark+spots+-+skin+lightening+soap+with+vitamin+c%2C+retinol%2C+collagen+-100g+x+2+bars%2Caps%2C1312&sr=8-1', 'https://www.amazon.com/Victorias-Secret-Fragrance-Mist-Vanilla/dp/B07JRG42D9/ref=sr_1_10?dib=eyJ2IjoiMSJ9.zWSRq7La67uNUJ9gL9A3X8cjkozC7JPzdaWlWc65muYgm_5TLkkjU6AA6hkMa3Nx3Qb5OtzewOVDM72ZfhxfpeLloinK_IT50ckn8Gtohj70pGVQhMN52G2m5If0VLGukNT_LFAxt2yiBaTtP1dDQ8EAXmMj6mOla1fjaH7ddOZZHEth4isAJqitoY-5zBs8ZTiVuK2aWGC9QeAHlIfrVhPJ16tUrFHnpvSZ517Odg5OsG1P8e1oaDG88dxC3PyZ8bj04kyfGKSvkAGlavOtYo6JEKSabHMx4hy2xohySyg.dHr3Qq6OXXHMtQZNJGHvNiiMj5zYiVP5U4wLNjPIwfg&dib_tag=se&keywords=perfume&qid=1733545339&sr=8-10&th=1', 'https://www.amazon.com/Glutathione-Kojic-Acid-Original-Soap/dp/B08S7RMJRP/ref=sr_1_1?crid=1KSFWETB9XT87&dib=eyJ2IjoiMSJ9.4tXVO8Bn5lswYeN1oKHMExjxEof4rrk6V4gLeVSkdovY6tnxL5OFcMse1qujojkiLN3y-T4SWwR-GhJCmhP7-8oO9s9mEkd4Jo2Ks6rbtYG7kEYf9IVmfHA8imIejewe4s06xClGCR9-y4AE4bPyDtOqCVttrMNLpmaIhXTTcTMmJAX3FBQ13yX7ryghqleU_WfXrsP9L13oVL6sRiAB0SbEBfJ7AROtbpwbTYlAVTT5aedUGDoAXSJv9L2TXT2A8rOH8vn5ug3eGuUevKWLJQoSNIXo5rbGnvXj0u7W7HE.z7dJliwBBjwTjlCtNOrD-GqzkOpHRqx5_0F2ucKQv5I&dib_tag=se&keywords=Glutathione+%26+Kojic+Acid+Original+Soap%2C+Evens+Skin+Tone+and+Leaves+Your+Skin+Smooth+and+Moisturized+%285+Bars%2C+120+Grams+per+Bar%29&qid=1733752932&sprefix=glutathione+%26+kojic+acid+original+soap%2C+evens+skin+tone+and+leaves+your+skin+smooth+and+moisturized+5+bars%2C+120+grams+per+bar+%2Caps%2C586&sr=8-1')
+
+nameofproduct3 <- vector("list", length(urls3))
+names3 <- vector("list", length(urls3))
+ratings3 <- vector("list", length(urls3))
+dates3 <- vector("list", length(urls3))
+title3 <- vector("list", length(urls3))
+text3 <- vector("list", length(urls3))
+n3 <- vector("list", length(urls3))
+```
+```{r}
+df <- list()
+
+for (i in seq_along(urls3)) {
+    session3 <- bow(urls3[i], user_agent = "Educational")
+    webpage3 <- scrape(session3)
+  
+    
+    nam3 <- webpage3 %>% html_nodes(".a-profile-name") %>% html_text()
+    nam3 <- nam3[!grepl("Fitbit Charge 6|AEAC Smart Watch", nam3, ignore.case = TRUE)]
+    nam3 <- nam3[nam3 != ""]
+    n3[[i]] <- nam3
+    name3 <- c() 
+    non_amazon_seen3 <- FALSE  
+    for (na3 in nam3) {
+      if (na3 == "Amazon Customer") {
+
+        if (non_amazon_seen3) {
+          name3 <- c(name3, na3)
+        }
+      } else {
+        name3 <- c(name3, na3)
+        non_amazon_seen3 <- TRUE
+        }
+    }
+    name3 <- name3[!duplicated(name3) | name3 == "Amazon Customer"]
+    names3[[i]] <- name3
+    
+        nameofproduct3[[i]] <-  webpage3 %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct3[[i]] <- rep(nameofproduct3[[i]], length.out = length(names3[[i]]))
+    
+    rate3 <- webpage3 %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati3 <- rate3[!grepl("Previous page|Next page|Previous set of slides|Next set of slides", rate3, ignore.case = TRUE)]
+    rat3 <- gsub(" out of 5 stars", "", rati3)
+    rats3 <- rat3
+    if (length(rats3) > length(name3)) {
+    rats3 <- tail(rats3, length(name3)) 
+    } else if (length(rats3) < length(name3)) {
+    rats3 <- c(rats3, rep(NA, length(name3) - length(rats3)))
+    }
+
+    ratings3[[i]] <- rats3
+    
+    dat3 <- webpage3 %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date3 <- gsub("Reviewed.*on ", "", dat3)
+    dates3[[i]] <- date3
+
+    titl3 <- webpage3 %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit3 <- gsub("Reviewed.*on ", "", titl3)
+    ti3 <- gsub(".*stars\\s*", "", tit3)
+    t3 <- gsub("\\s+", " ", ti3)
+    title3[[i]] <- t3
+
+    tex3 <- webpage3 %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te3 <- gsub("\\n", " ", tex3)
+    t3 <- gsub("\\s+", " ", te3)
+    text3[[i]] <- trimws(t3)
+}
+    
+```
+```{r}
+urls3b <- c('https://www.amazon.com/LightenUp-Exfoliating-Lightening-Brightening-Soap/dp/B073PFZRD5/ref=sr_1_5?crid=DURHAORGKCMS&dib=eyJ2IjoiMSJ9.xU5ngpIJ_vSP329uFJrUN9xGo8mdIm79b-NSdnF_wghDPM8stUqYtCmz0CeipCx1a1J1SPVs9n9VqwsPZ-X8Ygs0b5g6yvJiTAM__rzA4VmjOVPZx1-V3IVfcC6EtmWiFslMDDhGYIiIaIT_JW4n0ZGZFBjUaVeVM55fIlX7NOX_jiiMvX_nR5pKG0Q61107IkElkjDaxqzd81WJ4qVohovTe3T1-FL4AUVVrNorrqSER8OKy0p8fmwuyP44iY4CSbsxYbF-ieTyBmlCOkZ3GMXyGHcgDwdM2RcIpcA3z6w.m8tpH2em2227c4hcdMhW4VjUIq2H9Kl2_kHwlz-jMD0&dib_tag=se&keywords=OMIC+LightenUp%2C+Exfoliating+Soap+-+200g+%2F+7fl+oz+-+Skin+Brightening+Soap%2C+Cleansing+Bar%2C+Formulated+to+Fade+Dark+Spots%2C+with+Apricot%2C+Glycerin%2C+Coconut+Oil&qid=1733753129&sprefix=omic+lightenup%2C+exfoliating+soap+-+200g+%2F+7fl+oz+-+skin+brightening+soap%2C+cleansing+bar%2C+formulated+to+fade+dark+spots%2C+with+apricot%2C+glycerin%2C+coconut+oil%2Caps%2C536&sr=8-5', 'https://www.amazon.com/Neoprosone-Cleansing-Soap-Vitamin-200g/dp/B00A2SYGDW/ref=sr_1_5?crid=IBVUDTC7TPXR&dib=eyJ2IjoiMSJ9.S-AsLiH5DnShpINLkyfcJOiVa9hGWqEcyP-11mnkSQ1WvUkRzrrd3PZzttOQb-JyN_40-eihm22TzHBlcHXN5CbGeh1qm7ni58fB_G4KTkZSrFSiLn7XynDatIpKBv3oCcO2sFE2JijC3eR3EvZcKjMGzZg6fvN7wAv8nP3Cr5JlOlhg1OyGQrxiU3hkP-mZIkElkjDaxqzd81WJ4qVohqD195OdUOc6XT-97_hCt1frkoDgrGAersP_oEaHYByRpvS20rKt-z_-_WFvX2P3BNUSptAVzzzM06enxexVumo.uA7IJzu731_zqaTWy1I4gC4h5OFO-zpRadAs2K6wtdM&dib_tag=se&keywords=Neoprosone+Skin+Brightening+Soap%2C+2.82+oz+%2F+80+g%2C+Hyperpigmentation+Soap%2C+Cleansing+Bar%2C+Fade+Dark+Spots+on+Knees%2C+Elbows%2C+Face%2C+Private+Areas%2C+with+Vitamin+C+and+Castor+Oil&qid=1733753247&sprefix=neoprosone+skin+brightening+soap%2C+2.82+oz+%2F+80+g%2C+hyperpigmentation+soap%2C+cleansing+bar%2C+fade+dark+spots+on+knees%2C+elbows%2C+face%2C+private+areas%2C+with+vitamin+c+and+castor+oil%2Caps%2C639&sr=8-5', 'https://www.amazon.com/Koji-White-Brightening-Hyaluronic-Paraben-Free/dp/B076MS9YWB/ref=sr_1_1?dib=eyJ2IjoiMSJ9.cFW15svQnQ__3AQcyWhU2bmPE2qT5U9Z4XUi9LhBa435bqnMPC-IJI6T3QKCh7era__2BLgdQ6pqDezGWrLCAjIvfpwEEeF-z9VHaOjhIunGa4Of6wHlINQqfmPEypwfT_SvMoAeVdZgE7vKugvzokN1GFxL1cGMZ-cGjjUinqOOKFBA3aVDiPNUDpYorQt5nd6A7rRSlL1FlqAWaoqGfJOOAyhmtdeV-4XFkVF0HXE03afHXvEigjQgxzvRM_bHaIPn19g0GAysSJWFv5HUr9USptAVzzzM06enxexVumo.aVbzEv5VYid0wXg7NyIq1skO70KsWQVQ6MLzS2idmKY&dib_tag=se&keywords=Koji+White+Kojic+Acid+%26+Papaya+Skin+Brightening+Soap%2C+Exfoliating+Facial+Bar%2C+Radiant+Skin%2C+Rejuvenates%2C+Moisturizer%2C+Even+Tone+Cleansing+Bar+with+Hyaluronic+Acid%2C+Vegan+Soap%2C+2.82+oz+%282+Bars%29&qid=1733753416&sr=8-1', 'https://www.amazon.com/VDDO-Kojic-Acid-Soap-Turmeric-Vitamin-Retinol-Collagen/dp/B0CYWSVSQ9/ref=sr_1_1_sspa?crid=775H139UCJH4&dib=eyJ2IjoiMSJ9.ar7wdFAN7X3SRSukx84LvMgPgDw4Ns6iJsqP7VDbV48HCKIIjmhXEZQ3esXeJVW8Iay7N0HS1OuLlxbO94HlJG9Qlam6li_2on1E4k6bGrF8z9aGUWE7nJo_0UGfwabmD6bDxtrJewILQfZHn_GErWRKaOWYKseVBAJxoH4GN0GPbhnUI9fApWn5cCwgJY20E_2F4xXUznCmqTm-MujMFZGlTWE7YGuNV90qO7B0-QC66eb1i_O8o2JwIHZdV2VnYYDJDAQqS7-k1p-KJNflGZ9nl7lBGBHoh7LYXmLSBy8.m6CgIsUzxGJyVpMLa39Fmerd-2HEMxtq-Z1BxuEXwnI&dib_tag=se&keywords=VDDO-Kojic-Acid-Soap%2C+Turmeric+Soap+for+Dark+spots+with+Vitamin+C%2C+Vitamin+E%2CRetinol%2C+Collagen%2C+Turmeric+-+Original%2COlive+Oil%2CHyaluronic+Acid+for+Reduces+Dark+Spots+105g*2Pack+With+Holder&qid=1733753544&sprefix=vddo-kojic-acid-soap%2C+turmeric+soap+for+dark+spots+with+vitamin+c%2C+vitamin+e%2Cretinol%2C+collagen%2C+turmeric+-+original%2Colive+oil%2Chyaluronic+acid+for+reduces+dark+spots+105g+2pack+with+holder%2Caps%2C683&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1')
+nameofproduct3b <- vector("list", length(urls3b))
+names3b <- vector("list", length(urls3b))
+ratings3b <- vector("list", length(urls3b))
+dates3b <- vector("list", length(urls3b))
+title3b <- vector("list", length(urls3b))
+text3b <- vector("list", length(urls3b))
+n3b <- vector("list", length(urls3b))
+```
+```{r}
+df <- list()
+
+for (i in seq_along(urls3b)) {
+    session3b <- bow(urls3b[i], user_agent = "Educational")
+    webpage3b <- scrape(session3b)
+  
+    
+    nam3b <- webpage3b %>% html_nodes(".a-profile-name") %>% html_text()
+    nam3b <- nam3b[!grepl("Fitbit Charge 6|AEAC Smart Watch", nam3b, ignore.case = TRUE)]
+    nam3b <- nam3b[nam3b != ""]
+    n3b[[i]] <- nam3b
+    name3b <- c() 
+    non_amazon_seen3b <- FALSE  
+    for (na3b in nam3b) {
+      if (na3b == "Amazon Customer") {
+
+        if (non_amazon_seen3b) {
+          name3b <- c(name3b, na3b)
+        }
+      } else {
+        name3b <- c(name3b, na3b)
+        non_amazon_seen3b <- TRUE
+        }
+    }
+    name3b <- name3b[!duplicated(name3b) | name3b == "Amazon Customer"]
+    names3b[[i]] <- name3b
+    
+        nameofproduct3b[[i]] <-  webpage3b %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct3b[[i]] <- rep(nameofproduct3b[[i]], length.out = length(names3b[[i]]))
+    
+    rate3b <- webpage3b %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati3b <- rate3b[!grepl("Previous page|Next page|Previous set of slides|Next set of slides", rate3b, ignore.case = TRUE)]
+    rat3b <- gsub(" out of 5 stars", "", rati3b)
+    rats3b <- rat3b
+    if (length(rats3b) > length(name3b)) {
+    rats3b <- tail(rats3b, length(name3b)) 
+    } else if (length(rats3b) < length(name3b)) {
+    rats3b <- c(rats3b, rep(NA, length(name3b) - length(rats3b)))
+    }
+    ratings3b[[i]] <- rats3b
+    dat3b <- webpage3b %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date3b <- gsub("Reviewed.*on ", "", dat3b)
+    dates3b[[i]] <- date3b
+
+    titl3b <- webpage3b %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit3b <- gsub("Reviewed.*on ", "", titl3b)
+    ti3b <- gsub(".*stars\\s*", "", tit3b)
+    t3b <- gsub("\\s+", " ", ti3b)
+    title3b[[i]] <- t3b
+
+    tex3b <- webpage3b %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te3b <- gsub("\\n", " ", tex3b)
+    t3b <- gsub("\\s+", " ", te3b)
+    text3b[[i]] <- trimws(t3b)
+}
+```
+```{r}
+names3
+n3
+names3b
+n3b
+```
+```{r}
+nama31 <- names3[[1]]
+namez31 <- nama31[!grepl("PIPIHUA Kojic Acid", nama31, ignore.case = TRUE)]
+namez31 <- namez31[-(1:2)]
+produc31 <- nameofproduct3[[1]]
+produc31 <- rep(produc31, length.out = length(namez31))
+
+ratingz31 <- ratings3[[1]]
+    if (length(ratingz31) > length(namez31)) {
+    ratingz31 <- tail(ratingz31, length(namez31)) 
+    } else if (length(ratingz31) < length(namez31)) {
+    ratingz31 <- c(ratingz31, rep(NA, length(namez31) - length(ratingz31)))
+    }
+```
+```{r}
+soap11 <- data.frame(Name_of_Product = produc31,
+                      Userame = namez31,
+                       Rating = ratingz31,
+                       Date = dates3[[1]],
+                       Title_of_Review = title3[[1]],
+                       Text_of_Review = text3[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(soap11, 50)
+```
+```{r}
+nama32 <- n3[[2]]
+namez32 <- nama32[!grepl("How is Ralph", nama32, ignore.case = TRUE)]
+namez32 <- namez32[-(1:2)]
+namez32 <- unique(namez32)
+produc32 <- nameofproduct3[[2]]
+produc32 <- rep(produc32, length.out = length(namez32))
+
+
+ratingz32 <- ratings3[[2]]
+    if (length(ratingz32) > length(namez32)) {
+    ratingz32 <- tail(ratingz32, length(namez32)) 
+    } else if (length(ratingz32) < length(namez32)) {
+    ratingz32 <- c(ratingz32, rep(NA, length(namez32) - length(ratingz32)))
+    }
+```
+```{r}
+soap12 <- data.frame(Name_of_Product = produc32,
+                      Userame = namez32,
+                       Rating = ratingz32,
+                       Date = dates3[[2]],
+                       Title_of_Review = title3[[2]],
+                       Text_of_Review = text3[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(soap2, 50)
+```
+```{r}
+namez33 <- names3[[3]]
+produc33 <- nameofproduct3[[3]]
+produc33 <- rep(produc33, length.out = length(namez33))
+
+ratingz33 <- ratings3[[3]]
+    if (length(ratingz33) > length(namez33)) {
+    ratingz33 <- tail(ratingz33, length(namez33)) 
+    } else if (length(ratingz33) < length(namez33)) {
+    ratingz33<- c(ratingz33, rep(NA, length(namez33) - length(ratingz33)))
+    }
+```
+```{r}
+perfume3 <- data.frame(Name_of_Product = produc33,
+                      Userame = namez33,
+                       Rating = ratingz33,
+                       Date = dates3[[3]],
+                       Title_of_Review = title3[[3]],
+                       Text_of_Review = text3[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(perfume3, 50)
+```
+```{r}
+nama34 <- names3[[4]]
+namez34 <- nama34[!grepl("Victoria's Secret Bare", nama34, ignore.case = TRUE)]
+namez34 <- namez34[-(1:2)]
+produc34 <- nameofproduct3[[4]]
+produc34 <- rep(produc34, length.out = length(namez34))
+
+ratingz34 <- ratings3[[4]]
+    if (length(ratingz34) > length(namez34)) {
+    ratingz34 <- tail(ratingz34, length(namez34)) 
+    } else if (length(ratingz34) < length(namez34)) {
+    ratingz34<- c(ratingz34, rep(NA, length(namez34) - length(ratingz34)))
+    }
+```
+```{r}
+perfume4 <- data.frame(Name_of_Product = produc34,
+                      Userame = namez34,
+                       Rating = ratingz34,
+                       Date = dates3[[4]],
+                       Title_of_Review = title3[[4]],
+                       Text_of_Review = text3[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(perfume4, 50)
+```
+```{r}
+nama35 <- n3[[5]]
+namez35 <- nama35[!grepl("This soap really works", nama35, ignore.case = TRUE)]
+namez35 <- namez35[-(1:2)]
+namez35 <- unique(namez35)
+produc35 <- nameofproduct3[[5]]
+produc35 <- rep(produc35, length.out = length(namez35))
+
+ratingz35 <- ratings3[[5]]
+    if (length(ratingz35) > length(namez35)) {
+    ratingz35 <- tail(ratingz35, length(namez35)) 
+    } else if (length(ratingz3) < length(namez3)) {
+    ratingz35 <- c(ratingz35, rep(NA, length(namez35) - length(ratingz35)))
+    }
+```
+```{r}
+perfume5 <- data.frame(Name_of_Product = produc35,
+                      Userame = namez35,
+                       Rating = ratingz35,
+                       Date = dates3[[5]],
+                       Title_of_Review = title3[[5]],
+                       Text_of_Review = text3[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(perfume5, 50)
+```
+```{r}
+nama36 <- names3[[6]]
+namez36 <- nama36[!grepl("Honest Review Of", nama36, ignore.case = TRUE)]
+namez36 <- namez36[-(1:2)]
+producto36 <- productnumber3[[6]]
+producto36 <- rep(producto36, length.out = length(namez36))
+produc36 <- nameofproduct3[[6]]
+produc36 <- rep(produc36, length.out = length(namez36))
+cater36 <- category3[[3]]
+ca36 <- rep(cater36, length.out = length(namez36))
+
+ratingz36 <- ratings3[[6]]
+    if (length(ratingz36) > length(namez36)) {
+    ratingz36 <- tail(ratingz36, length(namez36)) 
+    } else if (length(ratingz36) < length(namez36)) {
+    ratingz36 <- c(ratingz36, rep(NA, length(namez36) - length(ratingz36)))
+    }
+```
+```{r}
+perfume6 <- data.frame(Category = ca36,
+                     Product_number = producto36,
+                      Name_of_Product = produc36,
+                      Userame = namez36,
+                       Rating = ratingz36,
+                       Date = dates3[[6]],
+                       Title_of_Review = title3[[6]],
+                       Text_of_Review = text3[[6]],
+                       stringsAsFactors = FALSE
+                       )
+head(perfume6, 50)
+```
+```{r}
+nama37 <- names3[[7]]
+namez37 <- nama37[!grepl("The ReCap: Gucci", nama37, ignore.case = TRUE)]
+namez37 <- namez37[-(1:2)]
+producto37 <- productnumber3[[7]]
+producto37 <- rep(producto37, length.out = length(namez37))
+produc37 <- nameofproduct3[[7]]
+produc37 <- rep(produc37, length.out = length(namez37))
+cater37 <- category3[[3]]
+ca37 <- rep(cater37, length.out = length(namez37))
+
+ratingz37 <- ratings3[[7]]
+    if (length(ratingz37) > length(namez37)) {
+    ratingz37 <- tail(ratingz37, length(namez37)) 
+    } else if (length(ratingz3) < length(namez3)) {
+    ratingz37 <- c(ratingz37, rep(NA, length(namez37) - length(ratingz37)))
+    }
+```
+```{r}
+perfume7 <- data.frame(Category = ca37,
+                     Product_number = producto37,
+                      Name_of_Product = produc37,
+                      Userame = namez37,
+                       Rating = ratingz37,
+                       Date = dates3[[7]],
+                       Title_of_Review = title3[[7]],
+                       Text_of_Review = text3[[7]],
+                       stringsAsFactors = FALSE
+                       )
+head(perfume7, 50)
+```
+```{r}
+nama38 <- names3b[[1]]
+namez38 <- nama38[!grepl("Victoria's Secret Tease", nama38, ignore.case = TRUE)]
+namez38 <- namez38[-(1:2)]
+producto38 <- productnumber3b[[1]]
+producto38 <- rep(producto38, length.out = length(namez38))
+produc38 <- nameofproduct3b[[1]]
+produc38 <- rep(produc38, length.out = length(namez38))
+cater38 <- category3b[[3]]
+ca38 <- rep(cater38, length.out = length(namez38))
+
+ratingz38 <- ratings3b[[1]]
+    if (length(ratingz38) > length(namez38)) {
+    ratingz38 <- tail(ratingz38, length(namez38)) 
+    } else if (length(ratingz38) < length(namez38)) {
+    ratingz38<- c(ratingz38, rep(NA, length(namez38) - length(ratingz38)))
+    }
+```
+```{r}
+perfume8 <- data.frame(Category = ca38,
+                     Product_number = producto38,
+                      Name_of_Product = produc38,
+                      Userame = namez38,
+                       Rating = ratingz38,
+                       Date = dates3b[[1]],
+                       Title_of_Review = title3b[[1]],
+                       Text_of_Review = text3b[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(perfume8, 50)
+```
+```{r}
+nama39 <- names3b[[2]]
+namez39 <- nama39[!grepl("Victoria's Secret Tease", nama39, ignore.case = TRUE)]
+namez39 <- namez39[-(1:2)]
+producto39 <- productnumber3b[[2]]
+producto39 <- rep(producto39, length.out = length(namez39))
+produc39 <- nameofproduct3b[[2]]
+produc39 <- rep(produc39, length.out = length(namez39))
+cater39 <- category3b[[3]]
+ca39 <- rep(cater39, length.out = length(namez39))
+
+ratingz39 <- ratings3b[[2]]
+    if (length(ratingz39) > length(namez39)) {
+    ratingz39 <- tail(ratingz39, length(namez39)) 
+    } else if (length(ratingz39) < length(namez39)) {
+    ratingz39 <- c(ratingz39, rep(NA, length(namez39) - length(ratingz39)))
+    }
+```
+```{r}
+perfume9 <- data.frame(Category = ca39,
+                     Product_number = producto39,
+                      Name_of_Product = produc39,
+                      Userame = namez39,
+                       Rating = ratingz39,
+                       Date = dates3b[[2]],
+                       Title_of_Review = title3b[[2]],
+                       Text_of_Review = text3b[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(perfume9, 50)
+```
+```{r}
+nama310 <- names3b[[3]]
+namez310 <- nama310[!grepl("MUGLER Angel Eau", nama310, ignore.case = TRUE)]
+namez310 <- namez310[-(1:2)]
+producto310 <- productnumber3b[[3]]
+producto310 <- rep(producto310, length.out = length(namez310))
+produc310 <- nameofproduct3b[[3]]
+produc310 <- rep(produc310, length.out = length(namez310))
+cater310 <- category3b[[3]]
+ca310 <- rep(cater310, length.out = length(namez310))
+
+ratingz310 <- ratings3b[[3]]
+    if (length(ratingz310) > length(namez310)) {
+    ratingz310 <- tail(ratingz310, length(namez310)) 
+    } else if (length(ratingz310) < length(namez310)) {
+    ratingz310 <- c(ratingz310, rep(NA, length(namez310) - length(ratingz310)))
+    }
+```
+```{r}
+perfume10 <- data.frame(Category = ca310,
+                     Product_number = producto310,
+                      Name_of_Product = produc310,
+                      Userame = namez310,
+                       Rating = ratingz310,
+                       Date = dates3b[[3]],
+                       Title_of_Review = title3b[[3]],
+                       Text_of_Review = text3b[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(perfume10, 50)
+```
