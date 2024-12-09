@@ -1101,76 +1101,82 @@ skincare10 %>%
   kable_styling(latex_options = "scale_down")
 ```
 ```{r}
-urls2b <- c('https://www.amazon.com/Amazon-Essentials-Slim-Fit-Stretch-Black/dp/B07BJKTXX3/ref=sr_1_1_ffob_sspa?crid=27TSZ91XTCRLW&dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BYVs1xuBogfsFXjGr21eELTn-kCQqhVS37mhEpiq1V30lPN2Nfn3b18GfyLXbY4K5rdG_iAcI6uDZ6-uuySkYD2owEBW5Mpj4wvMjZm99wDcJEeEEjSs76L0BamJLfkfmF48qFhaz1j2q8BuJs9zxjIY0inNy_Va296tTcK-MipEAzumwTOWlAoVvYYllskGuILEXwm8IwkWJZDhYKhPMpdHFia1EvTXgnfCE_IB2r0hqmm6SWDQi48n1-gWkn_8Wp7ElOGqSkvjAY-xfOvdAiY.gq-wH65kx5Udvj3-j5xR_blV-FIoERShoIiXZzK5X3c&dib_tag=se&keywords=pants&qid=1733754251&sprefix=pants%2Caps%2C468&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1')
-nameofproduct2b <- vector("list", length(urls2b))
-names2b <- vector("list", length(urls2b))
-ratings2b <- vector("list", length(urls2b))
-dates2b <- vector("list", length(urls2b))
-title2b <- vector("list", length(urls2b))
-text2b <- vector("list", length(urls2b))
-n2b <- vector("list", length(urls2b))
+urls3 <- c('https://www.amazon.com/Amazon-Essentials-Slim-Fit-Stretch-Black/dp/B07BJKTXX3/ref=sr_1_1_ffob_sspa?crid=27TSZ91XTCRLW&dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BYVs1xuBogfsFXjGr21eELTn-kCQqhVS37mhEpiq1V30lPN2Nfn3b18GfyLXbY4K5rdG_iAcI6uDZ6-uuySkYD2owEBW5Mpj4wvMjZm99wDcJEeEEjSs76L0BamJLfkfmF48qFhaz1j2q8BuJs9zxjIY0inNy_Va296tTcK-MipEAzumwTOWlAoVvYYllskGuILEXwm8IwkWJZDhYKhPMpdHFia1EvTXgnfCE_IB2r0hqmm6SWDQi48n1-gWkn_8Wp7ElOGqSkvjAY-xfOvdAiY.gq-wH65kx5Udvj3-j5xR_blV-FIoERShoIiXZzK5X3c&dib_tag=se&keywords=pants&qid=1733754251&sprefix=pants%2Caps%2C468&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1','https://www.amazon.com/BROKIG-Workout-Bodybuilding-Sweatpants-Pockets/dp/B07WN15P5P/ref=sr_1_3_sspa?crid=27TSZ91XTCRLW&dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BYVs1xuBogfsFXjGr21eELTn-kCQqhVS37mhEpiq1V30lPN2Nfn3b18GfyLXbY4K5rdG_iAcI6uDZ6-uuySkYD2owEBW5Mpj4wvMjZm99wDcJEeEEjSs76L0BamJLfkfmF48qFhaz1j2q8BuJs9zxjIY0inNy_Va296tTcK-MipEAzumwTOWlAoVvYYllskGuILEXwm8IwkWJZDhYKhPMpdHFia1EvTXgnfCE_IB2r0hqmm6SWDQi48n1-gWkn_8Wp7ElOGqSkvjAY-xfOvdAiY.gq-wH65kx5Udvj3-j5xR_blV-FIoERShoIiXZzK5X3c&dib_tag=se&keywords=pants&qid=1733756497&sprefix=pants%2Caps%2C468&sr=8-3-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1','https://www.amazon.com/dp/B08F3HJL2W/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B08F3HJL2W&pd_rd_w=UAkma&content-id=amzn1.sym.10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_p=10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_r=G6723859P14MZYAX66GK&pd_rd_wg=78AZX&pd_rd_r=dd950c98-8023-4103-a8c6-022b0ed35cd1&s=apparel&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM','https://www.amazon.com/dp/B07QRZBPGV/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B07QRZBPGV&pd_rd_w=cvp6B&content-id=amzn1.sym.10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_p=10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_r=4VK2P5P59VYSHX14SNJD&pd_rd_wg=fwLso&pd_rd_r=8b95485b-060b-4185-9328-6ec8322dfe6e&s=apparel&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM','https://www.amazon.com/dp/B07WN15P5P/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B07WN15P5P&pd_rd_w=5sAbZ&content-id=amzn1.sym.10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_p=10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_r=DKY06K4XA7RV8HJANSDZ&pd_rd_wg=ZLD4N&pd_rd_r=0ae490c0-b5ec-420b-89d4-71782dbced71&s=apparel&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM')
+nameofproduct3 <- vector("list", length(urls3))
+names3 <- vector("list", length(urls3))
+ratings3 <- vector("list", length(urls3))
+dates3 <- vector("list", length(urls3))
+title3 <- vector("list", length(urls3))
+text3 <- vector("list", length(urls3))
+n3 <- vector("list", length(urls3))
 ```
 ```{r}
-df <- list()
+n3 <- list()
+names3 <- list()
+nameofproduct3 <- list()
+ratings3 <- list()
+dates3 <- list()
+title3 <- list()
+text3 <- list()
 
-for (i in seq_along(urls2b)) {
-    session <- bow(urls2b[i], user_agent = "Educational")
-    webpage2b <- scrape(session)
-  
-    
-    nam2b <- webpage2b %>% html_nodes(".a-profile-name") %>% html_text()
-    nam2b <- nam2b[!grepl("Fitbit Charge 6|AEAC Smart Watch", nam2b, ignore.case = TRUE)]
-    nam2b <- nam2b[nam2b != ""]
-    n2b[[i]] <- nam2b
-    name2b <- c() 
-    non_amazon_seen2b <- FALSE  
-    for (na2b in nam2b) {
-      if (na2b == "Amazon Customer") {
+adjust_length <- function(short_vec, target_length) {
+  if (length(short_vec) < target_length) {
+    return(c(short_vec, rep(NA, target_length - length(short_vec))))
+  }
+  return(short_vec)
+}
 
-        if (non_amazon_seen2b) {
-          name2b <- c(name2b, na2b)
-        }
-      } else {
-        name2b <- c(name2b, na2b)
-        non_amazon_seen2b <- TRUE
-        }
+for (i in seq_along(urls3)) {
+  session <- bow(urls3[i], user_agent = "Educational")
+  webpage <- scrape(session)
+
+  nam3 <- webpage %>% html_nodes(".a-profile-name") %>% html_text()
+  nam3 <- nam3[!grepl("Fitbit Charge 6|AEAC Smart Watch", nam3, ignore.case = TRUE)]
+  nam3 <- nam3[nam3 != ""]
+  n3[[i]] <- nam3
+
+  non_amazon_seen <- FALSE
+  filtered_names <- c()
+  for (name in nam3) {
+    if (name == "Amazon Customer" && non_amazon_seen) {
+      filtered_names <- c(filtered_names, name)
+    } else if (name != "Amazon Customer") {
+      filtered_names <- c(filtered_names, name)
+      non_amazon_seen <- TRUE
     }
-    name2b <- name2b[!duplicated(name2b) | name2b == "Amazon Customer"]
-    names2b[[i]] <- name2b
-    
-        nameofproduct2b[[i]] <-  webpage2b %>%
-  html_nodes('.a-size-large.product-title-word-break') %>%
-  html_text()
-    nameofproduct2b[[i]] <- rep(nameofproduct2b[[i]], length.out = length(names2b[[i]]))
-    
-    rate2b <- webpage2b %>% html_nodes(".a-icon-alt") %>% html_text()
-    rati2b <- rate2b[!grepl("Previous page|Next page|Previous set of slides|Next set of slides", rate2b, ignore.case = TRUE)]
-    rat2b <- gsub(" out of 5 stars", "", rati2b)
-    rats2b <- rat2b
-    if (length(rats2b) > length(name2b)) {
-    rats2b <- tail(rats2b, length(name2b)) 
-    } else if (length(rats2b) < length(name2b)) {
-    rats2b <- c(rats2b, rep(NA, length(name2b) - length(rats2b)))
-    }
+  }
+  names3[[i]] <- filtered_names[!duplicated(filtered_names) | filtered_names == "Amazon Customer"]
 
-    ratings2b[[i]] <- rats2b
-    
-    dat2b <- webpage2b %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
-    date2b <- gsub("Reviewed.*on ", "", dat2b)
-    dates2b[[i]] <- date2b
+  product_name <- webpage %>%
+    html_nodes('.a-size-large.product-title-word-break') %>%
+    html_text() %>%
+    rep(length.out = length(names3[[i]]))
+  nameofproduct3[[i]] <- product_name
 
-    titl2b <- webpage2b %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
-    tit2b <- gsub("Reviewed.*on ", "", titl2b)
-    ti2b <- gsub(".*stars\\s*", "", tit2b)
-    t2b <- gsub("\\s+", " ", ti2b)
-    title2b[[i]] <- t2b
+  rate3 <- webpage %>% html_nodes(".a-icon-alt") %>% html_text()
+  rate3 <- rate3[!grepl("Previous page|Next page|Previous set of slides|Next set of slides", rate3, ignore.case = TRUE)]
+  ratings <- gsub(" out of 5 stars", "", rate3)
+  ratings3[[i]] <- adjust_length(ratings, length(names3[[i]]))
 
-    tex2b <- webpage2b %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
-    te2b <- gsub("\\n", " ", tex2b)
-    t2b <- gsub("\\s+", " ", te2b)
-    text2b[[i]] <- trimws(t2b)
+  dates3[[i]] <- webpage %>%
+    html_nodes(".a-size-base.a-color-secondary.review-date") %>%
+    html_text() %>%
+    gsub("Reviewed.*on ", "", .)
+
+  title3[[i]] <- webpage %>%
+    html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>%
+    html_text() %>%
+    trimws()
+
+  text3[[i]] <- webpage %>%
+    html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>%
+    html_text() %>%
+    gsub("\\n", " ", .) %>%
+    gsub("\\s+", " ", .) %>%
+    trimws()
 }
 ```
+
 ```{r}
 cate3 <- c("Category 1: WATCH", "Category 2: SKINCARE", "Category 3: PANTS", "Category 4", "Category 5")
 category3 <- vector("list", length(cate3))
@@ -1182,7 +1188,7 @@ for (i in seq_along(cate3)) {
 
 ```{r}
 for (i in seq_along(cate3)) {
-    category3[[i]] <- rep(category3[[i]], length.out = length(names2[[i]]))
+    category3[[i]] <- rep(category3[[i]], length.out = length(names3[[i]]))
 }
 ```
 ```{r}
@@ -1194,3 +1200,4 @@ for (i in seq_along(productnumbe2)) {
 for (i in seq_along(urls2)) {
     productnumber2[[i]] <- rep(productnumber3[[i]], length.out = length(names2[[i]]))
 }
+```
