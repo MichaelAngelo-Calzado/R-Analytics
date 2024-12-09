@@ -1101,103 +1101,122 @@ skincare10 %>%
   kable_styling(latex_options = "scale_down")
 ```
 ```{r}
-urls3 <- c('https://www.amazon.com/Amazon-Essentials-Slim-Fit-Stretch-Black/dp/B07BJKTXX3/ref=sr_1_1_ffob_sspa?crid=27TSZ91XTCRLW&dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BYVs1xuBogfsFXjGr21eELTn-kCQqhVS37mhEpiq1V30lPN2Nfn3b18GfyLXbY4K5rdG_iAcI6uDZ6-uuySkYD2owEBW5Mpj4wvMjZm99wDcJEeEEjSs76L0BamJLfkfmF48qFhaz1j2q8BuJs9zxjIY0inNy_Va296tTcK-MipEAzumwTOWlAoVvYYllskGuILEXwm8IwkWJZDhYKhPMpdHFia1EvTXgnfCE_IB2r0hqmm6SWDQi48n1-gWkn_8Wp7ElOGqSkvjAY-xfOvdAiY.gq-wH65kx5Udvj3-j5xR_blV-FIoERShoIiXZzK5X3c&dib_tag=se&keywords=pants&qid=1733754251&sprefix=pants%2Caps%2C468&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1','https://www.amazon.com/BROKIG-Workout-Bodybuilding-Sweatpants-Pockets/dp/B07WN15P5P/ref=sr_1_3_sspa?crid=27TSZ91XTCRLW&dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BYVs1xuBogfsFXjGr21eELTn-kCQqhVS37mhEpiq1V30lPN2Nfn3b18GfyLXbY4K5rdG_iAcI6uDZ6-uuySkYD2owEBW5Mpj4wvMjZm99wDcJEeEEjSs76L0BamJLfkfmF48qFhaz1j2q8BuJs9zxjIY0inNy_Va296tTcK-MipEAzumwTOWlAoVvYYllskGuILEXwm8IwkWJZDhYKhPMpdHFia1EvTXgnfCE_IB2r0hqmm6SWDQi48n1-gWkn_8Wp7ElOGqSkvjAY-xfOvdAiY.gq-wH65kx5Udvj3-j5xR_blV-FIoERShoIiXZzK5X3c&dib_tag=se&keywords=pants&qid=1733756497&sprefix=pants%2Caps%2C468&sr=8-3-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1','https://www.amazon.com/dp/B08F3HJL2W/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B08F3HJL2W&pd_rd_w=UAkma&content-id=amzn1.sym.10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_p=10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_r=G6723859P14MZYAX66GK&pd_rd_wg=78AZX&pd_rd_r=dd950c98-8023-4103-a8c6-022b0ed35cd1&s=apparel&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM','https://www.amazon.com/dp/B07QRZBPGV/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B07QRZBPGV&pd_rd_w=cvp6B&content-id=amzn1.sym.10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_p=10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_r=4VK2P5P59VYSHX14SNJD&pd_rd_wg=fwLso&pd_rd_r=8b95485b-060b-4185-9328-6ec8322dfe6e&s=apparel&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM','https://www.amazon.com/dp/B07WN15P5P/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B07WN15P5P&pd_rd_w=5sAbZ&content-id=amzn1.sym.10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_p=10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_r=DKY06K4XA7RV8HJANSDZ&pd_rd_wg=ZLD4N&pd_rd_r=0ae490c0-b5ec-420b-89d4-71782dbced71&s=apparel&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM')
-nameofproduct3 <- vector("list", length(urls3))
-names3 <- vector("list", length(urls3))
-ratings3 <- vector("list", length(urls3))
-dates3 <- vector("list", length(urls3))
-title3 <- vector("list", length(urls3))
-text3 <- vector("list", length(urls3))
-n3 <- vector("list", length(urls3))
+urls5 <- c('https://www.amazon.com/Amazon-Essentials-Slim-Fit-Stretch-Black/dp/B07BJKTXX3/ref=sr_1_1_ffob_sspa?crid=27TSZ91XTCRLW&dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BYVs1xuBogfsFXjGr21eELTn-kCQqhVS37mhEpiq1V30lPN2Nfn3b18GfyLXbY4K5rdG_iAcI6uDZ6-uuySkYD2owEBW5Mpj4wvMjZm99wDcJEeEEjSs76L0BamJLfkfmF48qFhaz1j2q8BuJs9zxjIY0inNy_Va296tTcK-MipEAzumwTOWlAoVvYYllskGuILEXwm8IwkWJZDhYKhPMpdHFia1EvTXgnfCE_IB2r0hqmm6SWDQi48n1-gWkn_8Wp7ElOGqSkvjAY-xfOvdAiY.gq-wH65kx5Udvj3-j5xR_blV-FIoERShoIiXZzK5X3c&dib_tag=se&keywords=pants&qid=1733754251&sprefix=pants%2Caps%2C468&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1','https://www.amazon.com/BROKIG-Workout-Bodybuilding-Sweatpants-Pockets/dp/B07WN15P5P/ref=sr_1_3_sspa?crid=27TSZ91XTCRLW&dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BYVs1xuBogfsFXjGr21eELTn-kCQqhVS37mhEpiq1V30lPN2Nfn3b18GfyLXbY4K5rdG_iAcI6uDZ6-uuySkYD2owEBW5Mpj4wvMjZm99wDcJEeEEjSs76L0BamJLfkfmF48qFhaz1j2q8BuJs9zxjIY0inNy_Va296tTcK-MipEAzumwTOWlAoVvYYllskGuILEXwm8IwkWJZDhYKhPMpdHFia1EvTXgnfCE_IB2r0hqmm6SWDQi48n1-gWkn_8Wp7ElOGqSkvjAY-xfOvdAiY.gq-wH65kx5Udvj3-j5xR_blV-FIoERShoIiXZzK5X3c&dib_tag=se&keywords=pants&qid=1733756497&sprefix=pants%2Caps%2C468&sr=8-3-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1','https://www.amazon.com/dp/B08F3HJL2W/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B08F3HJL2W&pd_rd_w=UAkma&content-id=amzn1.sym.10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_p=10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_r=G6723859P14MZYAX66GK&pd_rd_wg=78AZX&pd_rd_r=dd950c98-8023-4103-a8c6-022b0ed35cd1&s=apparel&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM','https://www.amazon.com/dp/B07QRZBPGV/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B07QRZBPGV&pd_rd_w=cvp6B&content-id=amzn1.sym.10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_p=10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_r=4VK2P5P59VYSHX14SNJD&pd_rd_wg=fwLso&pd_rd_r=8b95485b-060b-4185-9328-6ec8322dfe6e&s=apparel&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM','https://www.amazon.com/dp/B07WN15P5P/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B07WN15P5P&pd_rd_w=5sAbZ&content-id=amzn1.sym.10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_p=10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_r=DKY06K4XA7RV8HJANSDZ&pd_rd_wg=ZLD4N&pd_rd_r=0ae490c0-b5ec-420b-89d4-71782dbced71&s=apparel&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM')
+nameofproduct5 <-vector("list", length(urls5))
+names5 <- vector("list", length(urls5))
+ratings5 <- vector("list", length(urls5))
+dates5 <- vector("list", length(urls5))
+title5 <- vector("list", length(urls5))
+text5 <- vector("list", length(urls5))
+n5 <- vector("list", length(urls5))
 ```
 ```{r}
-n3 <- list()
-names3 <- list()
-nameofproduct3 <- list()
-ratings3 <- list()
-dates3 <- list()
-title3 <- list()
-text3 <- list()
-
-adjust_length <- function(short_vec, target_length) {
-  if (length(short_vec) < target_length) {
-    return(c(short_vec, rep(NA, target_length - length(short_vec))))
-  }
-  return(short_vec)
-}
-
-for (i in seq_along(urls3)) {
-  session <- bow(urls3[i], user_agent = "Educational")
-  webpage <- scrape(session)
-
-  nam3 <- webpage %>% html_nodes(".a-profile-name") %>% html_text()
-  nam3 <- nam3[!grepl("Fitbit Charge 6|AEAC Smart Watch", nam3, ignore.case = TRUE)]
-  nam3 <- nam3[nam3 != ""]
-  n3[[i]] <- nam3
-
-  non_amazon_seen <- FALSE
-  filtered_names <- c()
-  for (name in nam3) {
-    if (name == "Amazon Customer" && non_amazon_seen) {
-      filtered_names <- c(filtered_names, name)
-    } else if (name != "Amazon Customer") {
-      filtered_names <- c(filtered_names, name)
-      non_amazon_seen <- TRUE
+df <- list()
+for (i in seq_along(urls5)) {
+    session <- bow(urls5[i], user_agent = "Educational")
+  webpage5 <- scrape(session)
+  nam5 <-webpage5 %>% html_nodes(".a-profile-name") %>% html_text()
+  nam5 <- nam5[!grepl("Fitbit Charge 6|AEAC Smart Watch", nam5, ignore.case = TRUE)]
+    nam5 <- nam5[nam5 != ""]
+    n5[[i]] <- nam5
+    name5 <- c() 
+    non_amazon_seen5 <- FALSE  
+    for (na5 in nam5) {
+      if (na5 == "Amazon Customer") {
+        if (non_amazon_seen5) {
+          name5 <- c(name5, na5)
+        }
+      } else {
+        name5 <- c(name5, na5)
+        non_amazon_seen5 <- TRUE
+        }
     }
-  }
-  names3[[i]] <- filtered_names[!duplicated(filtered_names) | filtered_names == "Amazon Customer"]
-
-  product_name <- webpage %>%
-    html_nodes('.a-size-large.product-title-word-break') %>%
-    html_text() %>%
-    rep(length.out = length(names3[[i]]))
-  nameofproduct3[[i]] <- product_name
-
-  rate3 <- webpage %>% html_nodes(".a-icon-alt") %>% html_text()
-  rate3 <- rate3[!grepl("Previous page|Next page|Previous set of slides|Next set of slides", rate3, ignore.case = TRUE)]
-  ratings <- gsub(" out of 5 stars", "", rate3)
-  ratings3[[i]] <- adjust_length(ratings, length(names3[[i]]))
-
-  dates3[[i]] <- webpage %>%
-    html_nodes(".a-size-base.a-color-secondary.review-date") %>%
-    html_text() %>%
-    gsub("Reviewed.*on ", "", .)
-
-  title3[[i]] <- webpage %>%
-    html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>%
-    html_text() %>%
-    trimws()
-
-  text3[[i]] <- webpage %>%
-    html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>%
-    html_text() %>%
-    gsub("\\n", " ", .) %>%
-    gsub("\\s+", " ", .) %>%
-    trimws()
-}
-```
-
-```{r}
-cate3 <- c("Category 1: WATCH", "Category 2: SKINCARE", "Category 3: PANTS", "Category 4", "Category 5")
-category3 <- vector("list", length(cate3))
-for (i in seq_along(cate3)) {
-    category3[[i]] <- cate3[i]
-}
-```
-
-
-```{r}
-for (i in seq_along(cate3)) {
-    category3[[i]] <- rep(category3[[i]], length.out = length(names3[[i]]))
+    name5 <- name5[!duplicated(name5) | name5 == "Amazon Customer"]
+    names5[[i]] <- name5
+    
+        nameofproduct5[[i]] <-  webpage5 %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct5[[i]] <- rep(nameofproduct5[[i]], length.out = length(names5[[i]]))
+    
+    rate5 <- webpage5 %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati5 <- rate5[!grepl("Previous page|Next page|Previous set of slides|Next set of slides", rate5, ignore.case = TRUE)]
+    rat5 <- gsub(" out of 5 stars", "", rati5)
+    rats5 <- rat5
+    if (length(rats5) > length(name5)) {
+    rats5 <- tail(rats5, length(name5)) 
+    } else if (length(rats5) < length(name5)) {
+    rats5 <- c(rats5, rep(NA, length(name5) - length(rats5)))
+    }
+    ratings5[[i]] <- rats5
+    
+    dat5 <- webpage5 %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date5 <- gsub("Reviewed.*on ", "", dat5)
+    dates5[[i]] <- date5
+    titl5 <- webpage5 %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit5 <- gsub("Reviewed.*on ", "", titl5)
+    ti5 <- gsub(".*stars\\s*", "", tit5)
+    t5 <- gsub("\\s+", " ", ti5)
+    title5[[i]] <- t5
+    tex5 <- webpage5 %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te5 <- gsub("\\n", " ", tex5)
+    t5 <- gsub("\\s+", " ", te5)
+    text5[[i]] <- trimws(t5)
 }
 ```
 ```{r}
-productnumbe2 <- c("Product 1", "Product 2", "Product 3", "Product 4", "Product 5", "Product 6", "Product 7", "Product 8", "Product 9", "Product 10")
-productnumber2 <- vector("list", length(productnumbe2))
-for (i in seq_along(productnumbe2)) {
-    productnumber2[[i]] <- productnumbe3[i]
+cate5 <- c("Category 1: WATCH", "Category 2", "Category 3", "Category 4: SHOES", "Category 5: PANTS")
+category5 <- vector("list", length(cate5))
+for (i in seq_along(cate5)) {
+    category5[[i]] <- cate5[i]
 }
-for (i in seq_along(urls2)) {
-    productnumber2[[i]] <- rep(productnumber3[[i]], length.out = length(names2[[i]]))
+```
+```{r}
+for (i in seq_along(urls5)) {
+    category5[[i]] <- rep(category5[[i]], length.out = length(names5[[i]]))
 }
+```
+```{r}
+productnumbe5 <- c("Product 1", "Product 2", "Product 3", "Product 4", "Product 5")
+productnumber5 <- vector("list", length(productnumbe5))
+for (i in seq_along(productnumbe5)) {
+    productnumber5[[i]] <- productnumbe5[i]
+}
+for (i in seq_along(urls5)) {
+    productnumber5[[i]] <- rep(productnumber5[[i]], length.out = length(names5[[i]]))
+}
+```
+```{r}
+nama5 <- names5[[1]]
+namez5 <- nama5[!grepl("360 Degree View", nama5, ignore.case = TRUE)]
+namez5 <- unique(namez5)
+namez5 <- namez5[-1]
+producto5 <- productnumber5[[1]]
+producto5 <- rep(producto5, length.out = length(namez5))
+produc5 <- nameofproduct5[[1]]
+produc5 <- rep(produc5, length.out = length(namez5))
+cater5 <- category5[[5]]
+ca5 <- rep(cater5, length.out = length(namez5))
+ratingz5 <- ratings5[[1]]
+    if (length(ratingz5) > length(namez5)) {
+    ratingz5 <- tail(ratingz5, length(namez5)) 
+    } else if (length(ratingz5) < length(namez5)) {
+    ratingz5 <- c(ratingz5, rep(NA, length(namez5) - length(ratingz5)))
+    }
+```
+```{r}
+pants1 <- data.frame(Category = ca5,
+                     Product_number = producto5,
+                      Name_of_Product = produc5,
+                      Userame = namez5,
+                       Rating = ratingz5,
+                       Date = dates5[[1]],
+                       Title_of_Review = title5[[1]],
+                       Text_of_Review = text5[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants1, 50)
+```
+```{r}
+namez5
 ```
