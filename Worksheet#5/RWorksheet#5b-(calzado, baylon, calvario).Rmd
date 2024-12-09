@@ -1100,5 +1100,97 @@ skincare10 %>%
     kable("latex", booktabs = TRUE) %>%
   kable_styling(latex_options = "scale_down")
 ```
+```{r}
+urls2b <- c('https://www.amazon.com/Amazon-Essentials-Slim-Fit-Stretch-Black/dp/B07BJKTXX3/ref=sr_1_1_ffob_sspa?crid=27TSZ91XTCRLW&dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BYVs1xuBogfsFXjGr21eELTn-kCQqhVS37mhEpiq1V30lPN2Nfn3b18GfyLXbY4K5rdG_iAcI6uDZ6-uuySkYD2owEBW5Mpj4wvMjZm99wDcJEeEEjSs76L0BamJLfkfmF48qFhaz1j2q8BuJs9zxjIY0inNy_Va296tTcK-MipEAzumwTOWlAoVvYYllskGuILEXwm8IwkWJZDhYKhPMpdHFia1EvTXgnfCE_IB2r0hqmm6SWDQi48n1-gWkn_8Wp7ElOGqSkvjAY-xfOvdAiY.gq-wH65kx5Udvj3-j5xR_blV-FIoERShoIiXZzK5X3c&dib_tag=se&keywords=pants&qid=1733754251&sprefix=pants%2Caps%2C468&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1')
+nameofproduct2b <- vector("list", length(urls2b))
+names2b <- vector("list", length(urls2b))
+ratings2b <- vector("list", length(urls2b))
+dates2b <- vector("list", length(urls2b))
+title2b <- vector("list", length(urls2b))
+text2b <- vector("list", length(urls2b))
+n2b <- vector("list", length(urls2b))
+```
+```{r}
+df <- list()
+
+for (i in seq_along(urls2b)) {
+    session <- bow(urls2b[i], user_agent = "Educational")
+    webpage2b <- scrape(session)
+  
+    
+    nam2b <- webpage2b %>% html_nodes(".a-profile-name") %>% html_text()
+    nam2b <- nam2b[!grepl("Fitbit Charge 6|AEAC Smart Watch", nam2b, ignore.case = TRUE)]
+    nam2b <- nam2b[nam2b != ""]
+    n2b[[i]] <- nam2b
+    name2b <- c() 
+    non_amazon_seen2b <- FALSE  
+    for (na2b in nam2b) {
+      if (na2b == "Amazon Customer") {
+
+        if (non_amazon_seen2b) {
+          name2b <- c(name2b, na2b)
+        }
+      } else {
+        name2b <- c(name2b, na2b)
+        non_amazon_seen2b <- TRUE
+        }
+    }
+    name2b <- name2b[!duplicated(name2b) | name2b == "Amazon Customer"]
+    names2b[[i]] <- name2b
+    
+        nameofproduct2b[[i]] <-  webpage2b %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct2b[[i]] <- rep(nameofproduct2b[[i]], length.out = length(names2b[[i]]))
+    
+    rate2b <- webpage2b %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati2b <- rate2b[!grepl("Previous page|Next page|Previous set of slides|Next set of slides", rate2b, ignore.case = TRUE)]
+    rat2b <- gsub(" out of 5 stars", "", rati2b)
+    rats2b <- rat2b
+    if (length(rats2b) > length(name2b)) {
+    rats2b <- tail(rats2b, length(name2b)) 
+    } else if (length(rats2b) < length(name2b)) {
+    rats2b <- c(rats2b, rep(NA, length(name2b) - length(rats2b)))
+    }
+
+    ratings2b[[i]] <- rats2b
+    
+    dat2b <- webpage2b %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date2b <- gsub("Reviewed.*on ", "", dat2b)
+    dates2b[[i]] <- date2b
+
+    titl2b <- webpage2b %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit2b <- gsub("Reviewed.*on ", "", titl2b)
+    ti2b <- gsub(".*stars\\s*", "", tit2b)
+    t2b <- gsub("\\s+", " ", ti2b)
+    title2b[[i]] <- t2b
+
+    tex2b <- webpage2b %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te2b <- gsub("\\n", " ", tex2b)
+    t2b <- gsub("\\s+", " ", te2b)
+    text2b[[i]] <- trimws(t2b)
+}
+```
+```{r}
+cate3 <- c("Category 1: WATCH", "Category 2: SKINCARE", "Category 3: PANTS", "Category 4", "Category 5")
+category3 <- vector("list", length(cate3))
+for (i in seq_along(cate3)) {
+    category3[[i]] <- cate3[i]
+}
+```
 
 
+```{r}
+for (i in seq_along(cate3)) {
+    category3[[i]] <- rep(category3[[i]], length.out = length(names2[[i]]))
+}
+```
+```{r}
+productnumbe2 <- c("Product 1", "Product 2", "Product 3", "Product 4", "Product 5", "Product 6", "Product 7", "Product 8", "Product 9", "Product 10")
+productnumber2 <- vector("list", length(productnumbe2))
+for (i in seq_along(productnumbe2)) {
+    productnumber2[[i]] <- productnumbe3[i]
+}
+for (i in seq_along(urls2)) {
+    productnumber2[[i]] <- rep(productnumber3[[i]], length.out = length(names2[[i]]))
+}
