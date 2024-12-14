@@ -11,7 +11,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 
 ```
-
 ```{r}
 library(polite)
 library(kableExtra)
@@ -22,7 +21,6 @@ library(dplyr)
 library(stringr)
 library(ggplot2)
 ```
-
 ```{r}
 urls <- c('https://www.amazon.com/dp/B09QBVD7BY/ref=sspa_dk_detail_1?psc=1&pd_rd_i=B09QBVD7BY&pd_rd_w=YErdA&content-id=amzn1.sym.8c2f9165-8e93-42a1-8313-73d3809141a2&pf_rd_p=8c2f9165-8e93-42a1-8313-73d3809141a2&pf_rd_r=YGK1ZMXTXRVX69S2S9T0&pd_rd_wg=0Q3Oe&pd_rd_r=a6744fca-8b92-42ea-9265-67523bb4445b&s=wireless&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWw', 'https://www.amazon.com/dp/B0D45JFN4T/ref=sspa_dk_detail_4?pd_rd_i=B0D45JFN4T&pd_rd_w=oDGD4&content-id=amzn1.sym.8c2f9165-8e93-42a1-8313-73d3809141a2&pf_rd_p=8c2f9165-8e93-42a1-8313-73d3809141a2&pf_rd_r=YX8BHC2AQF69PHF6Q3TF&pd_rd_wg=bAsOE&pd_rd_r=fc8429c3-aeeb-4478-981c-05ce1854b718&s=wireless&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWw&th=1', 'https://www.amazon.com/Fossil-Minimalist-Quartz-Stainless-Leather/dp/B079DD13WB/ref=sr_1_6?dib=eyJ2IjoiMSJ9.AFIUHMISy7v70cr9d3Uv3W7CmeBqIZ0bFcWM8jT7D1vdc1s0BuCDkQeIO2-fftK-0RTAjp11Cfs1Foy-NVgHVZx85Yeq4LqSL4KWqF8zlF3hjvqiKkrVI9yrQeKslO-NszyYSTKHrI9weEvmvEiRqTLJYkRe8Np_1wYb57Nea2zQpwjgMcK1P2rGDMx9J8sd5tD210nuDVe0q9Fc6UENeBMqHQSKVnD6H2c0EbYnMewC-kfq0U6g5ZjKsV-aX4tdzdppgn2cEe3dcMPusHLQbcUuENXSHxjw83_D3rvtV30.tw1zhG32m4HA4c6MvGhwJoeARtGe4KvcPOTxUVX7QB8&dib_tag=se&keywords=watch&qid=1733455501&sr=8-6&th=1', 'https://www.amazon.com/Fossil-Quartz-Stainless-Leather-Chronograph/dp/B017SN1OI8/ref=sr_1_8?dib=eyJ2IjoiMSJ9.AFIUHMISy7v70cr9d3Uv3W7CmeBqIZ0bFcWM8jT7D1vdc1s0BuCDkQeIO2-fftK-0RTAjp11Cfs1Foy-NVgHVZx85Yeq4LqSL4KWqF8zlF3hjvqiKkrVI9yrQeKslO-NszyYSTKHrI9weEvmvEiRqTLJYkRe8Np_1wYb57Nea2zQpwjgMcK1P2rGDMx9J8sd5tD210nuDVe0q9Fc6UENeBMqHQSKVnD6H2c0EbYnMewC-kfq0U6g5ZjKsV-aX4tdzdppgn2cEe3dcMPusHLQbcUuENXSHxjw83_D3rvtV30.tw1zhG32m4HA4c6MvGhwJoeARtGe4KvcPOTxUVX7QB8&dib_tag=se&keywords=watch&qid=1733455501&sr=8-8&th=1', 'https://www.amazon.com/Amazon-Essentials-Silver-Tone-Black-Strap/dp/B07YQFST6X/ref=sr_1_9?dib=eyJ2IjoiMSJ9.AFIUHMISy7v70cr9d3Uv3W7CmeBqIZ0bFcWM8jT7D1vdc1s0BuCDkQeIO2-fftK-0RTAjp11Cfs1Foy-NVgHVZx85Yeq4LqSL4KWqF8zlF3hjvqiKkrVI9yrQeKslO-NszyYSTKHrI9weEvmvEiRqTLJYkRe8Np_1wYb57Nea2zQpwjgMcK1P2rGDMx9J8sd5tD210nuDVe0q9Fc6UENeBMqHQSKVnD6H2c0EbYnMewC-kfq0U6g5ZjKsV-aX4tdzdppgn2cEe3dcMPusHLQbcUuENXSHxjw83_D3rvtV30.tw1zhG32m4HA4c6MvGhwJoeARtGe4KvcPOTxUVX7QB8&dib_tag=se&keywords=watch&qid=1733455501&sr=8-9&th=1', 'https://www.amazon.com/Tensky-Android-Waterproof-Pedometer-Activity/dp/B0DBY8KXCR/ref=sr_1_13_sspa?dib=eyJ2IjoiMSJ9.AFIUHMISy7v70cr9d3Uv3W7CmeBqIZ0bFcWM8jT7D1vdc1s0BuCDkQeIO2-fftK-0RTAjp11Cfs1Foy-NVgHVZx85Yeq4LqSL4KWqF8zlF3hjvqiKkrVI9yrQeKslO-NszyYSTKHrI9weEvmvEiRqTLJYkRe8Np_1wYb57Nea2zQpwjgMcK1P2rGDMx9J8sd5tD210nuDVe0q9Fc6UENeBMqHQSKVnD6H2c0EbYnMewC-kfq0U6g5ZjKsV-aX4tdzdppgn2cEe3dcMPusHLQbcUuENXSHxjw83_D3rvtV30.tw1zhG32m4HA4c6MvGhwJoeARtGe4KvcPOTxUVX7QB8&dib_tag=se&keywords=watch&qid=1733455501&sr=8-13-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9tdGY&th=1','https://www.amazon.com/Michael-Kors-Womens-Gold-Tone-MK3513/dp/B01BESQG9K/ref=sr_1_17?dib=eyJ2IjoiMSJ9.AFIUHMISy7v70cr9d3Uv3W7CmeBqIZ0bFcWM8jT7D1vdc1s0BuCDkQeIO2-fftK-0RTAjp11Cfs1Foy-NVgHVZx85Yeq4LqSL4KWqF8zlF3hjvqiKkrVI9yrQeKslO-NszyYSTKHrI9weEvmvEiRqTLJYkRe8Np_1wYb57Nea2zQpwjgMcK1P2rGDMx9J8sd5tD210nuDVe0q9Fc6UENeBMqHQSKVnD6H2c0EbYnMewC-kfq0U6g5ZjKsV-aX4tdzdppgn2cEe3dcMPusHLQbcUuENXSHxjw83_D3rvtV30.tw1zhG32m4HA4c6MvGhwJoeARtGe4KvcPOTxUVX7QB8&dib_tag=se&keywords=watch&qid=1733455501&sr=8-17&th=1', 'https://www.amazon.com/HAYLOU-Android-Watches-Fitness-Waterproof/dp/B09N6S6RFM/ref=sr_1_20_sspa?dib=eyJ2IjoiMSJ9.AFIUHMISy7v70cr9d3Uv3W7CmeBqIZ0bFcWM8jT7D1vdc1s0BuCDkQeIO2-fftK-0RTAjp11Cfs1Foy-NVgHVZx85Yeq4LqSL4KWqF8zlF3hjvqiKkrVI9yrQeKslO-NszyYSTKHrI9weEvmvEiRqTLJYkRe8Np_1wYb57Nea2zQpwjgMcK1P2rGDMx9J8sd5tD210nuDVe0q9Fc6UENeBMqHQSKVnD6H2c0EbYnMewC-kfq0U6g5ZjKsV-aX4tdzdppgn2cEe3dcMPusHLQbcUuENXSHxjw83_D3rvtV30.tw1zhG32m4HA4c6MvGhwJoeARtGe4KvcPOTxUVX7QB8&dib_tag=se&keywords=watch&qid=1733455501&sr=8-20-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9tdGY&psc=1')
 
@@ -959,7 +957,6 @@ skincare6 %>%
     kable("latex", booktabs = TRUE) %>%
   kable_styling(latex_options = "scale_down")
 ```
-
 ```{r}
 nama15 <- names2[[7]]
 namez15 <- nama15[!grepl("BAIMEI jade roller", nama15, ignore.case = TRUE)]
@@ -1065,7 +1062,6 @@ skincare9 %>%
     kable("latex", booktabs = TRUE) %>%
   kable_styling(latex_options = "scale_down")
 ```
-
 ```{r}
 nama18 <- names2b[[3]]
 namez18 <- nama18[!grepl("This wrapping mask", nama18, ignore.case = TRUE)]
@@ -1100,5 +1096,511 @@ skincare10 %>%
     kable("latex", booktabs = TRUE) %>%
   kable_styling(latex_options = "scale_down")
 ```
+```{r}
+urls5 <- c('https://www.amazon.com/Amazon-Essentials-Slim-Fit-Stretch-Black/dp/B07BJKTXX3/ref=sr_1_1_ffob_sspa?crid=27TSZ91XTCRLW&dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BYVs1xuBogfsFXjGr21eELTn-kCQqhVS37mhEpiq1V30lPN2Nfn3b18GfyLXbY4K5rdG_iAcI6uDZ6-uuySkYD2owEBW5Mpj4wvMjZm99wDcJEeEEjSs76L0BamJLfkfmF48qFhaz1j2q8BuJs9zxjIY0inNy_Va296tTcK-MipEAzumwTOWlAoVvYYllskGuILEXwm8IwkWJZDhYKhPMpdHFia1EvTXgnfCE_IB2r0hqmm6SWDQi48n1-gWkn_8Wp7ElOGqSkvjAY-xfOvdAiY.gq-wH65kx5Udvj3-j5xR_blV-FIoERShoIiXZzK5X3c&dib_tag=se&keywords=pants&qid=1733754251&sprefix=pants%2Caps%2C468&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1','https://www.amazon.com/BROKIG-Workout-Bodybuilding-Sweatpants-Pockets/dp/B07WN15P5P/ref=sr_1_3_sspa?crid=27TSZ91XTCRLW&dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BYVs1xuBogfsFXjGr21eELTn-kCQqhVS37mhEpiq1V30lPN2Nfn3b18GfyLXbY4K5rdG_iAcI6uDZ6-uuySkYD2owEBW5Mpj4wvMjZm99wDcJEeEEjSs76L0BamJLfkfmF48qFhaz1j2q8BuJs9zxjIY0inNy_Va296tTcK-MipEAzumwTOWlAoVvYYllskGuILEXwm8IwkWJZDhYKhPMpdHFia1EvTXgnfCE_IB2r0hqmm6SWDQi48n1-gWkn_8Wp7ElOGqSkvjAY-xfOvdAiY.gq-wH65kx5Udvj3-j5xR_blV-FIoERShoIiXZzK5X3c&dib_tag=se&keywords=pants&qid=1733756497&sprefix=pants%2Caps%2C468&sr=8-3-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1','https://www.amazon.com/dp/B08F3HJL2W/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B08F3HJL2W&pd_rd_w=UAkma&content-id=amzn1.sym.10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_p=10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_r=G6723859P14MZYAX66GK&pd_rd_wg=78AZX&pd_rd_r=dd950c98-8023-4103-a8c6-022b0ed35cd1&s=apparel&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM','https://www.amazon.com/dp/B07QRZBPGV/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B07QRZBPGV&pd_rd_w=cvp6B&content-id=amzn1.sym.10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_p=10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_r=4VK2P5P59VYSHX14SNJD&pd_rd_wg=fwLso&pd_rd_r=8b95485b-060b-4185-9328-6ec8322dfe6e&s=apparel&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM','https://www.amazon.com/dp/B07WN15P5P/ref=sspa_dk_detail_0?psc=1&pd_rd_i=B07WN15P5P&pd_rd_w=5sAbZ&content-id=amzn1.sym.10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_p=10c716f0-b18a-473a-9d6a-5d87bc47ef1e&pf_rd_r=DKY06K4XA7RV8HJANSDZ&pd_rd_wg=ZLD4N&pd_rd_r=0ae490c0-b5ec-420b-89d4-71782dbced71&s=apparel&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM')
+nameofproduct5 <-vector("list", length(urls5))
+names5 <- vector("list", length(urls5))
+ratings5 <- vector("list", length(urls5))
+dates5 <- vector("list", length(urls5))
+title5 <- vector("list", length(urls5))
+text5 <- vector("list", length(urls5))
+n5 <- vector("list", length(urls5))
+```
+```{r}
+df <- list()
+for (i in seq_along(urls5)) {
+    session <- bow(urls5[i], user_agent = "Educational")
+  webpage5 <- scrape(session)
+  nam5 <-webpage5 %>% html_nodes(".a-profile-name") %>% html_text()
+  nam5 <- nam5[!grepl("Fitbit Charge 6|AEAC Smart Watch", nam5, ignore.case = TRUE)]
+    nam5 <- nam5[nam5 != ""]
+    n5[[i]] <- nam5
+    name5 <- c() 
+    non_amazon_seen5 <- FALSE  
+    for (na5 in nam5) {
+      if (na5 == "Amazon Customer") {
+        if (non_amazon_seen5) {
+          name5 <- c(name5, na5)
+        }
+      } else {
+        name5 <- c(name5, na5)
+        non_amazon_seen5 <- TRUE
+        }
+    }
+    name5 <- name5[!duplicated(name5) | name5 == "Amazon Customer"]
+    names5[[i]] <- name5
+    
+        nameofproduct5[[i]] <-  webpage5 %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct5[[i]] <- rep(nameofproduct5[[i]], length.out = length(names5[[i]]))
+    
+    rate5 <- webpage5 %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati5 <- rate5[!grepl("Previous page|Next page|Previous set of slides|Next set of slides", rate5, ignore.case = TRUE)]
+    rat5 <- gsub(" out of 5 stars", "", rati5)
+    rats5 <- rat5
+    if (length(rats5) > length(name5)) {
+    rats5 <- tail(rats5, length(name5)) 
+    } else if (length(rats5) < length(name5)) {
+    rats5 <- c(rats5, rep(NA, length(name5) - length(rats5)))
+    }
+    ratings5[[i]] <- rats5
+    
+    dat5 <- webpage5 %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date5 <- gsub("Reviewed.*on ", "", dat5)
+    dates5[[i]] <- date5
+    titl5 <- webpage5 %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit5 <- gsub("Reviewed.*on ", "", titl5)
+    ti5 <- gsub(".*stars\\s*", "", tit5)
+    t5 <- gsub("\\s+", " ", ti5)
+    title5[[i]] <- t5
+    tex5 <- webpage5 %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te5 <- gsub("\\n", " ", tex5)
+    t5 <- gsub("\\s+", " ", te5)
+    text5[[i]] <- trimws(t5)
+}
+```
+```{r}
+cate5 <- c("Category 1: WATCH", "Category 2", "Category 3", "Category 4: SHOES", "Category 5: PANTS")
+category5 <- vector("list", length(cate5))
+for (i in seq_along(cate5)) {
+    category5[[i]] <- cate5[i]
+}
+```
+```{r}
+for (i in seq_along(urls5)) {
+    category5[[i]] <- rep(category5[[i]], length.out = length(names5[[i]]))
+}
+```
+```{r}
+productnumbe5 <- c("Product 1", "Product 2", "Product 3", "Product 4", "Product 5")
+productnumber5 <- vector("list", length(productnumbe5))
+for (i in seq_along(productnumbe5)) {
+    productnumber5[[i]] <- productnumbe5[i]
+}
+for (i in seq_along(urls5)) {
+    productnumber5[[i]] <- rep(productnumber5[[i]], length.out = length(names5[[i]]))
+}
+```
+```{r}
+nama5 <- names5[[1]]
+namez5 <- nama5[!grepl("Amazon Essentials Men's Slim-Fit Jeans", nama5, ignore.case = TRUE)]
+namez5 <- unique(namez5)
+namez5 <- namez5[-1]
+producto5 <- productnumber5[[1]]
+producto5 <- rep(producto5, length.out = length(namez5))
+produc5 <- nameofproduct5[[1]]
+produc5 <- rep(produc5, length.out = length(namez5))
+cater5 <- category5[[5]]
+ca5 <- rep(cater5, length.out = length(namez5))
+ratingz5 <- ratings5[[1]]
+    if (length(ratingz5) > length(namez5)) {
+    ratingz5 <- tail(ratingz5, length(namez5)) 
+    } else if (length(ratingz5) < length(namez5)) {
+    ratingz5 <- c(ratingz5, rep(NA, length(namez5) - length(ratingz5)))
+    }
+```
+```{r}
+pants1 <- data.frame(Category = ca5,
+                     Product_number = producto5,
+                      Name_of_Product = produc5,
+                      Userame = namez5,
+                       Rating = ratingz5,
+                       Date = dates5[[1]],
+                       Title_of_Review = title5[[1]],
+                       Text_of_Review = text5[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants1, 50)
+```
+```{r}
+namez5
+```
+```{r}
+nama52 <- names5[[1]]
+name52 <- nama52[!grepl("BROKIG Mens Gym Jogger Pants,Casual Slim Workout Sweatpants with Zipper Pockets Bodybuilding Athletic Pants", nama52, ignore.case = TRUE)]
+namez52 <- unique(namez5)
+namez52 <- namez52[-(2:2)]
+producto52 <- productnumber5[[2]]
+producto52 <- rep(producto52, length.out = length(namez52))
+produc52 <- nameofproduct5[[2]]
+produc52 <- rep(produc52, length.out = length(namez52))
+cater52 <- category5[[5]]
+ca52 <- rep(cater52, length.out = length(namez52))
+ratingz52 <- ratings5[[2]]
+    if (length(ratingz52) > length(namez52)) {
+    ratingz52 <- tail(ratingz52, length(namez52)) 
+    } else if (length(ratingz52) < length(namez52)) {
+    ratingz52 <- c(ratingz52, rep(NA, length(namez52) - length(ratingz52)))
+    }
+```
+```{r}
+pants2 <- data.frame(Category = ca52,
+                     Product_number = producto52,
+                      Name_of_Product = produc52,
+                      Userame = namez52,
+                       Rating = ratingz52,
+                       Date = dates5[[2]],
+                       Title_of_Review = title5[[2]],
+                       Text_of_Review = text5[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants2, 50)
+```
+```{r}
+namez52
+```
+```{r}
+nama53 <- names5[[3]]
+namez53 <- nama53[!grepl("BROKIG Mens Lightweight Gym Jogger Pants,Men's Workout Sweatpants with Zip Pocketr", nama53, ignore.case = TRUE)]
+namez53 <- namez53[-(1:2)]
+namez53 <- unique(namez53)
+producto53 <- productnumber5[[3]]
+producto53 <- rep(producto53, length.out = length(namez53))
+produc53 <- nameofproduct5[[3]]
+produc53 <- rep(produc53, length.out = length(namez53))
+cater53 <- category5[[5]]
+ca53 <- rep(cater53, length.out = length(namez53))
+ratingz53 <- ratings5[[3]]
+    if (length(ratingz53) > length(namez53)) {
+    ratingz53 <- tail(ratingz53, length(namez53)) 
+    } else if (length(ratingz53) < length(namez53)) {
+    ratingz53 <- c(ratingz53, rep(NA, length(namez53) - length(ratingz53)))
+    }
+```
+```{r}
+pants3 <- data.frame(Category = ca53,
+                     Product_number = producto53,
+                      Name_of_Product = produc53,
+                      Userame = namez53,
+                       Rating = ratingz53,
+                       Date = dates5[[3]],
+                       Title_of_Review = title5[[3]],
+                       Text_of_Review = text5[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants3, 50)
+```
+```{r}
+names5[[3]]
+```
+```{r}
+nama54 <- names5[[4]]
+namez54 <- nama54[!grepl("BROKIG Mens Zip Joggers Pants - Casual Gym Workout Track Pants Comfortable Slim Fit Tapered Sweatpants with Pockets", nama54, ignore.case = TRUE)]
+namez54 <- namez54[-(1:2)]
+namez54 <- unique(namez54)
+producto54 <- productnumber5[[4]]
+producto54 <- rep(producto54, length.out = length(namez54))
+produc54 <- nameofproduct5[[4]]
+produc54 <- rep(produc54, length.out = length(namez54))
+cater54 <- category5[[4]]
+ca54 <- rep(cater54, length.out = length(namez54))
+ratingz54 <- ratings5[[4]]
+    if (length(ratingz54) > length(namez54)) {
+    ratingz54 <- tail(ratingz54, length(namez54)) 
+    } else if (length(ratingz54) < length(namez54)) {
+    ratingz54 <- c(ratingz54, rep(NA, length(namez54) - length(ratingz54)))
+    }
+```
+```{r}
+pants4 <- data.frame(Category = ca54,
+                     Product_number = producto54,
+                      Name_of_Product = produc54,
+                      Userame = namez54,
+                       Rating = ratingz54,
+                       Date = dates5[[4]],
+                       Title_of_Review = title5[[4]],
+                       Text_of_Review = text5[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants4, 50)
+```
+```{r}
+names5[[4]]
+```
+```{r}
+nama55 <- names5[[5]]
+namez55 <- nama55[!grepl("BROKIG Mens Gym Jogger Pants,Casual Slim Workout Sweatpants with Zipper Pockets Bodybuilding Athletic Pantss", nama55, ignore.case = TRUE)]
+namez55 <- namez55[-(1:2)]
+namez55 <- unique(namez55)
+producto55 <- productnumber5[[5]]
+producto55 <- rep(producto55, length.out = length(namez55))
+produc55 <- nameofproduct5[[5]]
+produc55 <- rep(produc55, length.out = length(namez55))
+cater55 <- category5[[5]]
+ca55 <- rep(cater55, length.out = length(namez55))
+ratingz55 <- ratings5[[5]]
+    if (length(ratingz55) > length(namez55)) {
+    ratingz55 <- tail(ratingz55, length(namez55)) 
+    } else if (length(ratingz55) < length(namez55)) {
+    ratingz55 <- c(ratingz55, rep(NA, length(namez55) - length(ratingz55)))
+    }
+```
+```{r}
+pants5 <- data.frame(Category = ca55,
+                     Product_number = producto55,
+                      Name_of_Product = produc55,
+                      Userame = namez55,
+                       Rating = ratingz55,
+                       Date = dates5[[5]],
+                       Title_of_Review = title5[[5]],
+                       Text_of_Review = text5[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants5, 50)
+```
+```{r}
+names5[[5]]
+```
+```{r}
+urls5b <- c('https://www.amazon.com/Wrangler-Authentics-Relaxed-Stretch-Cargo/dp/B0BTRMKQW5/ref=sr_1_6?dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BQEAx7Lju222fMupvQJu2rVIXc909ErUfmNRjUtKWzP_liVuPYd9ZRcKbBizYMJ9xTAGoKM_RP7260aLRx2IbrHJwRLl01ZA-3t0FWWaef07BftP5QoyZvRqGOsi6Z7ZSnKbzBtBT-beIhZ0EfQ8h1Bpv4ZHvE9to24bec4rvvCBC01G_aO__RoJEFT2Sx0zJmfCz9deWM7USLlAd68ygH0-mmh6MgukZAeirtNO3n2hyDtmVSAROzbn7YuR9zofaOfKPAxOOIr5xLIQ8nFC_sg.ZfOVK2JcrdlQPqGEXjljkpeiZ7nKtWsxODiaQGJUFNs&dib_tag=se&keywords=pants&qid=1733793880&sr=8-6','https://www.amazon.com/GYM-PEOPLE-Pockets-Control-Leggings/dp/B07HQPKDZB/ref=sr_1_8?dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BQEAx7Lju222fMupvQJu2rVIXc909ErUfmNRjUtKWzP_liVuPYd9ZRcKbBizYMJ9xTAGoKM_RP7260aLRx2IbrHJwRLl01ZA-3t0FWWaef07BftP5QoyZvRqGOsi6Z7ZSnKbzBtBT-beIhZ0EfQ8h1Bpv4ZHvE9to24bec4rvvCBC01G_aO__RoJEFT2Sx0zJmfCz9deWM7USLlAd68ygH0-mmh6MgukZAeirtNO3n2hyDtmVSAROzbn7YuR9zofaOfKPAxOOIr5xLIQ8nFC_sg.ZfOVK2JcrdlQPqGEXjljkpeiZ7nKtWsxODiaQGJUFNs&dib_tag=se&keywords=pants&qid=1733793880&sr=8-8','https://www.amazon.com/Amazon-Essentials-Classic-Fit-Wrinkle-Resistant-Flat-Front/dp/B06XWMJH3K/ref=sr_1_7?dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BQEAx7Lju222fMupvQJu2rVIXc909ErUfmNRjUtKWzP_liVuPYd9ZRcKbBizYMJ9xTAGoKM_RP7260aLRx2IbrHJwRLl01ZA-3t0FWWaef07BftP5QoyZvRqGOsi6Z7ZSnKbzBtBT-beIhZ0EfQ8h1Bpv4ZHvE9to24bec4rvvCBC01G_aO__RoJEFT2Sx0zJmfCz9deWM7USLlAd68ygH0-mmh6MgukZAeirtNO3n2hyDtmVSAROzbn7YuR9zofaOfKPAxOOIr5xLIQ8nFC_sg.ZfOVK2JcrdlQPqGEXjljkpeiZ7nKtWsxODiaQGJUFNs&dib_tag=se&keywords=pants&qid=1733793880&sr=8-7','https://www.amazon.com/Hanes-EcoSmart-Sweatpant-Pockets-Charcoal/dp/B07FN591SL/ref=sr_1_6?crid=1BITIL2VZEU47&dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BQEAx7Lju222fMupvQJu2rVIXc909ErUfmNRjUtKWzP_liVuPYd9ZRcKbBizYMJ9xTAGoKM_RP7260aLRx2IbrHJwRLl01ZA-3t0FWWaef07BftP5QoyZvRqGOsi6Z7ZSnKbzBtBT-beIhZ0EfQ8h1Bpv4ZHvE9to24bec4rvvCBC01G_aO__RoJEFT2Sx0zJmfCz9deWM7USLlAd68ygH0-mmh6MgukZAeirtNO3n2hyDtmVSAROzbn7YuR9zofaOfKPAxOOIr5xLIQ8nFC_sg.ZfOVK2JcrdlQPqGEXjljkpeiZ7nKtWsxODiaQGJUFNs&dib_tag=se&keywords=pants&qid=1733794068&sprefix=pants%2Caps%2C396&sr=8-6','https://www.amazon.com/G4Free-Pockets-Palazzo-Fashion-Sweatpants/dp/B0CR5NHMB2/ref=sr_1_18?crid=1BITIL2VZEU47&dib=eyJ2IjoiMSJ9.lxTaNXjcDhEwKCXa5-a-BQEAx7Lju222fMupvQJu2rVIXc909ErUfmNRjUtKWzP_liVuPYd9ZRcKbBizYMJ9xTAGoKM_RP7260aLRx2IbrHJwRLl01ZA-3t0FWWaef07BftP5QoyZvRqGOsi6Z7ZSnKbzBtBT-beIhZ0EfQ8h1Bpv4ZHvE9to24bec4rvvCBC01G_aO__RoJEFT2Sx0zJmfCz9deWM7USLlAd68ygH0-mmh6MgukZAeirtNO3n2hyDtmVSAROzbn7YuR9zofaOfKPAxOOIr5xLIQ8nFC_sg.ZfOVK2JcrdlQPqGEXjljkpeiZ7nKtWsxODiaQGJUFNs&dib_tag=se&keywords=pants&qid=1733794068&sprefix=pants%2Caps%2C396&sr=8-18')
 
+nameofproduct5b <-vector("list", length(urls5b))
+names5b <- vector("list", length(urls5b))
+ratings5b <- vector("list", length(urls5b))
+dates5b <- vector("list", length(urls5b))
+title5b <- vector("list", length(urls5b))
+text5b <- vector("list", length(urls5b))
+n5b <- vector("list", length(urls5b))
+```
 
+```{r}
+df <- list()
+for (i in seq_along(urls5b)) {
+    session <- bow(urls5b[i], user_agent = "Educational")
+  webpage5b <- scrape(session)
+  nam5b <-webpage5b %>% html_nodes(".a-profile-name") %>% html_text()
+  nam5b <- nam5b[!grepl("Fitbit Charge 6|AEAC Smart Watch", nam5b, ignore.case = TRUE)]
+    nam5b <- nam5b[nam5b != ""]
+    n5b[[i]] <- nam5b
+    name5b <- c() 
+    non_amazon_seen5b <- FALSE  
+    for (na5b in nam5b) {
+      if (na5b == "Amazon Customer") {
+        if (non_amazon_seen5b) {
+          name5b <- c(name5b, na5b)
+        }
+      } else {
+        name5b <- c(name5b, na5b)
+        non_amazon_seen5b <- TRUE
+        }
+    }
+    name5b <- name5b[!duplicated(name5b) | name5b == "Amazon Customer"]
+    names5b[[i]] <- name5b
+    
+        nameofproduct5b[[i]] <-  webpage5b %>%
+  html_nodes('.a-size-large.product-title-word-break') %>%
+  html_text()
+    nameofproduct5b[[i]] <- rep(nameofproduct5b[[i]], length.out = length(names5b[[i]]))
+    
+    rate5b <- webpage5b %>% html_nodes(".a-icon-alt") %>% html_text()
+    rati5b <- rate5b[!grepl("Previous page|Next page|Previous set of slides|Next set of slides", rate5b, ignore.case = TRUE)]
+    rat5b <- gsub(" out of 5 stars", "", rati5b)
+    rats5b <- rat5b
+    if (length(rats5b) > length(name5b)) {
+    rats5b <- tail(rats5b, length(name5b)) 
+    } else if (length(rats5b) < length(name5b)) {
+    rats5b <- c(rats5b, rep(NA, length(name5b) - length(rats5b)))
+    }
+    ratings5b[[i]] <- rats5b
+    
+    dat5b <- webpage5b %>% html_nodes(".a-size-base.a-color-secondary.review-date") %>% html_text()
+    date5b <- gsub("Reviewed.*on ", "", dat5b)
+    dates5b[[i]] <- date5b
+    titl5b <- webpage5b %>% html_nodes(".a-size-base.review-title.a-color-base.review-title-content.a-text-bold") %>% html_text()
+    tit5b <- gsub("Reviewed.*on ", "", titl5b)
+    ti5b <- gsub(".*stars\\s*", "", tit5b)
+    t5b <- gsub("\\s+", " ", ti5b)
+    title5b[[i]] <- t5b
+    tex5b <- webpage5b %>% html_nodes(".a-expander-content.reviewText.review-text-content.a-expander-partial-collapse-content") %>% html_text()
+    te5b <- gsub("\\n", " ", tex5b)
+    t5b <- gsub("\\s+", " ", te5b)
+    text5b[[i]] <- trimws(t5b)
+}
+```
+```{r}
+for (i in seq_along(urls5b)) {
+    category5b[[i]] <- rep(category5b[[i]], length.out = length(names5b[[i]]))
+}
+```
+```{r}
+productnumbe5b <- c("Product 6", "Product 7", "Product 8", "Product 9", "Product 10")
+productnumber5b <- vector("list", length(productnumbe5b))
+for (i in seq_along(productnumbe5b)) {
+    productnumber5b[[i]] <- productnumbe5b[i]
+}
+for (i in seq_along(urls5b)) {
+    productnumber5b[[i]] <- rep(productnumber5b[[i]], length.out = length(names5b[[i]]))
+}
+```
+```{r}
+nama5b <- names5b[[1]]
+namez5b <- nama5b[!grepl("AWrangler Authentics Men's Relaxed Fit Stretch Cargo Pantr", nama5b, ignore.case = TRUE)]
+namez5b <- unique(namez5b)
+namez5b <- namez5b[-1]
+producto5b <- productnumber5[[1]]
+producto5b <- rep(producto5b, length.out = length(namez5b))
+produc5b <- nameofproduct5b[[1]]
+produc5b <- rep(produc5b, length.out = length(namez5b))
+cater5b <- category5[[5]]
+ca5b <- rep(cater5b, length.out = length(namez5b))
+ratingz5b <- ratings5b[[1]]
+    if (length(ratingz5b) > length(namez5b)) {
+    ratingz5b <- tail(ratingz5b, length(namez5b)) 
+    } else if (length(ratingz5b) < length(namez5b)) {
+    ratingz5b <- c(ratingz5b, rep(NA, length(namez5b) - length(ratingz5b)))
+    }
+```
+```{r}
+pants6 <- data.frame(Category = ca5b,
+                     Product_number = producto5b,
+                      Name_of_Product = produc5b,
+                      Userame = namez5b,
+                       Rating = ratingz5b,
+                       Date = dates5b[[1]],
+                       Title_of_Review = title5b[[1]],
+                       Text_of_Review = text5b[[1]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants6, 50)
+```
+```{r}
+namez5b
+```
+```{r}
+nama5b2 <- names5b[[2]]
+namez5b2 <- nama5b2[!grepl("THE GYM PEOPLE Thick High Waist Yoga Pants with Pockets, Tummy Control Workout Running Yoga Leggings for Womenr", nama5b2, ignore.case = TRUE)]
+namez5b2 <- unique(namez5b2)
+namez5b2 <- namez5b2[-(2:2)]
+producto5b2 <- productnumber5[[2]]
+producto5b2 <- rep(producto5b2, length.out = length(namez5b2))
+produc5b2 <- nameofproduct5b[[2]]
+produc5b2 <- rep(produc5b2, length.out = length(namez5b2))
+cater5b2 <- category5[[5]]
+ca5b2 <- rep(cater5b2, length.out = length(namez5b2))
+ratingz5b2 <- ratings5b[[2]]
+    if (length(ratingz5b2) > length(namez5b2)) {
+    ratingz5b2 <- tail(ratingz5b2, length(namez5b2)) 
+    } else if (length(ratingz5b2) < length(namez5b2)) {
+    ratingz5b2 <- c(ratingz5b2, rep(NA, length(namez5b2) - length(ratingz5b2)))
+    }
+```
+```{r}
+pants7 <- data.frame(Category = ca5b2,
+                     Product_number = producto5b2,
+                      Name_of_Product = produc5b2,
+                      Userame = namez5b2,
+                       Rating = ratingz5b2,
+                       Date = dates5b[[2]],
+                       Title_of_Review = title5b[[2]],
+                       Text_of_Review = text5b[[2]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants7, 50)
+```
+```{r}
+namez5b2
+```
+```{r}
+nama5b3 <- names5b[[3]]
+namez5b3 <- nama5b3[!grepl("Amazon Essentials Men's Classic-Fit Wrinkle-Resistant Flat-Front Chino Pant", nama5b3, ignore.case = TRUE)]
+namez5b3 <- namez5b3[-(1:2)]
+namez5b3 <- unique(namez5b3)
+producto5b3 <- productnumber5[[3]]
+producto5b3 <- rep(producto5b3, length.out = length(namez5b3))
+produc5b3 <- nameofproduct5b[[3]]
+produc5b3 <- rep(produc5b3, length.out = length(namez5b3))
+cater5b3 <- category5[[5]]
+ca5b3 <- rep(cater5b3, length.out = length(namez5b3))
+ratingz5b3 <- ratings5b[[3]]
+    if (length(ratingz5b3) > length(namez5b3)) {
+    ratingz5b3 <- tail(ratingz5b3, length(namez5b3)) 
+    } else if (length(ratingz5b3) < length(namez5b3)) {
+    ratingz5b3 <- c(ratingz5b3, rep(NA, length(namez5b3) - length(ratingz5b3)))
+    }
+```
+```{r}
+pants8 <- data.frame(Category = ca5b3,
+                     Product_number = producto5b3,
+                      Name_of_Product = produc5b3,
+                      Userame = namez5b3,
+                       Rating = ratingz5b3,
+                       Date = dates5b[[3]],
+                       Title_of_Review = title5b[[3]],
+                       Text_of_Review = text5b[[3]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants8, 50)
+```
+```{r}
+names5b[[3]]
+```
+```{r}
+nama5b4 <- names5b[[4]]
+namez5b4 <- nama5b4[!grepl("Hanes ComfortSoft EcoSmart Men's Fleece Sweatpants", nama5b4, ignore.case = TRUE)]
+namez5b4 <- namez5b4[-(1:2)]
+namez5b4 <- unique(namez5b4)
+producto5b4 <- productnumber5[[4]]
+producto5b4 <- rep(producto5b4, length.out = length(namez5b4))
+produc5b4 <- nameofproduct5b[[4]]
+produc5b4 <- rep(produc5b4, length.out = length(namez5b4))
+cater5b4 <- category5[[4]]
+ca5b4 <- rep(cater5b4, length.out = length(namez5b4))
+ratingz5b4 <- ratings5b[[5]]
+    if (length(ratingz5b4) > length(namez5b4)) {
+    ratingz5b4 <- tail(ratingz5b4, length(namez5b4)) 
+    } else if (length(ratingz5b4) < length(namez5b4)) {
+    ratingz5b4 <- c(ratingz5b4, rep(NA, length(namez5b4) - length(ratingz5b4)))
+    }
+```
+```{r}
+pants9 <- data.frame(Category = ca5b4,
+                     Product_number = producto5b4,
+                      Name_of_Product = produc5b4,
+                      Userame = namez5b4,
+                       Rating = ratingz5b4,
+                       Date = dates5b[[4]],
+                       Title_of_Review = title5b[[4]],
+                       Text_of_Review = text5b[[4]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants9, 50)
+```
+```{r}
+names5b[[4]]
+```
+```{r}
+nama5b5 <- names5b[[5]]
+namez5b5 <- nama5b5[!grepl("G4Free Yoga Pants Women Wide Leg Pants with Pockets High Waist Stretch Dress Casual Sweatpants", nama5b5, ignore.case = TRUE)]
+namez5b5 <- namez5b5[-(1:2)]
+namezb5 <- unique(namez5b5)
+producto5b5 <- productnumber5[[5]]
+producto5b5 <- rep(producto5b5, length.out = length(namez5b5))
+produc5b5 <- nameofproduct5b[[5]]
+produc5b5 <- rep(produc5b5, length.out = length(namez5b5))
+cater5b5 <- category5[[4]]
+ca5b5 <- rep(cater5b5, length.out = length(namez5b5))
+ratingz5b5 <- ratings5b[[5]]
+    if (length(ratingz5b5) > length(namez5b5)) {
+    ratingz4b5 <- tail(ratingz5b5, length(namez5b5)) 
+    } else if (length(ratingz5b5) < length(namez5b5)) {
+    ratingz5b5 <- c(ratingz5b5, rep(NA, length(namez5b5) - length(ratingz5b5)))
+    }
+```
+```{r}
+pants10 <- data.frame(Category = ca5b5,
+                     Product_number = producto5b5,
+                      Name_of_Product = produc5b5,
+                      Userame = namez5b5,
+                       Rating = ratingz5b5,
+                       Date = dates5b[[5]],
+                       Title_of_Review = title5b[[5]],
+                       Text_of_Review = text5b[[5]],
+                       stringsAsFactors = FALSE
+                       )
+head(pants10, 50)
+```
+```{r}
+names5b[[5]]
+```
+#done cat5
